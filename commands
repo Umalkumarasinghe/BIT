@@ -1,0 +1,5 @@
+# commands used
+1) python manage.py db init
+2) python manage.py db migrate
+3) python manage.py db upgrade
+4) python manage.py db stamp head

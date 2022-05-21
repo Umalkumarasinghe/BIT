@@ -1,0 +1,148 @@
+{% extends "base/base.html" %}
+{% block header %}
+{% if type in ['view', 'edit'] %}
+{{ object.name }}
+{% else %}
+Create Good Issue Note
+{% endif %}
+{% endblock %}
+{% block content %}
+<script src="../../static/custom/js/gin.js"></script>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div style="margin-top: 20px" class="container-login100-form-btn alert alert-danger">
+                    {% for message in messages %}
+                    {{ message }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+            </div>
+            <form role="form" method="POST">
+                <div class="card-body">
+                    {% if type in ['view', 'edit'] %}
+                    {{ form.id(hidden=True, value=object.id) }}
+                    {% endif %}
+                    <table width="100%">
+                        <div style="font-size: 20px; margin-bottom: 10px;" class="text-primary"><b>Basic Information</b></div>
+                        <tr>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.production_team_id.label }}
+                                    {{ form.production_team_id(placeholder="Package", class="form-control", maxlength=255, readonly=True if type=='view' else False)}}
+                                </div>
+                            </td>
+                            <td width="6%"></td>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.gin_name.label }}
+                                    {{ form.gin_name(placeholder="Price", class="form-control", maxlength=120, readonly=True if type=='view' else False, value=object.gin_name if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.gin_created_date.label }}
+                                    {{ form.gin_created_date(placeholder="Start Date", class="form-control",value=object.gin_created_date if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                            <td width="6%"></td>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.gin_expected_date.label }}
+                                    {{ form.gin_expected_date(placeholder="End Date", class="form-control", value=object.gin_expected_date if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.gin_state.label }}
+                                    {{ form.gin_state(placeholder="Start Date", class="form-control",value=object.gin_state if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                            <td width="6%"></td>
+                        </tr>
+                    </table>
+                    <div>
+                        <table class="table table-bordered table-striped" id="userTable">
+                            <tr class="text-center">
+                                <td width="25%"><b>Item</b></td>
+                                <td width="25%"><b>quantity</b></td>
+                                <td width="25%"><b>description</b></td>
+                                <td width="25%"><b>sent quantity</b></td>
+                                <td width="25%"><b>Action</b></td>
+                            </tr>
+                            {% if type in ['view', 'edit'] %}
+                            {% for item in items %}
+                            <tr class="text-center" data-itemid="{{item.id}}">
+                                <td>{{ item.item.item_name }}</td>
+                                <td>{{ item.item_quantity_line }}</td>
+                                <td>{{ item.item_name_line }}</td>
+                                <td>{{ item.item_sent_quantity_line }}</td>
+                                <td>
+                                    <button type='button' class='btn btn-dark btn-sm mr-2' onclick='editItem(this)' data-itemid="{{item.id}}" data-item_product_id="{{item.item.id}}"><span class="fa fa-edit"></span></button>
+                                    <button type='button' class='btn btn-danger btn-sm' onclick='deleteRow(this)' data-itemid=" + itemId + "><span class="fa fa-trash"></span></button>
+                                </td>
+                                <script>
+                                        var itemId = {{ item.id }};
+                                        var item_name_line = "{{ item.item_name_line }}";
+                                        var quantity = "{{ item.item_quantity_line }}";
+                                        var sent_quantity = "{{ item.item_sent_quantity_line }}";
+                                        var item_product_id = {{ item.item.id }};
+
+                                        
+                                        addToModel({ itemId, item_product_id, item_name_line, quantity, sent_quantity});
+<!--                                        debugger;-->
+                                        console.log(dataModel);
+                                        itemId = {{ item.id }} + 1;
+                                    </script>
+                            </tr>
+                            {% endfor %}
+                            {% endif %}
+
+                            {% if type in ['view', 'edit'] %}
+                            <script>
+                                 dataModel.ginData.id = {{ object.id }};
+                                 console.log(dataModel);
+                            </script>
+                            {% endif %}
+                        </table>
+                    </div>
+                    <div>
+                        <table class="table table-bordered table-striped " id="inputPurchaseTable">
+                            <tr>
+                                <td width="20%">{{ form.item_product_id(placeholder="Items", readonly=True if type=='view' else False)}}</td>
+                                <td width="25%"><input type="number" id="quantity" name="quantity" min="1" required></td>
+                                <td width="25%"><input type="text" id="item_name_line" name="item_name_line" required></td>
+                                <td width="25%"><input type="number" id="sent_quantity" name="quantity" min="1" required></td>
+                                <td width="15%"><input type="button" id="btnItemForm" value="Add" onclick="fillTable()"/>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                {% if type=='edit' %}
+                <div style="padding: 20px;">
+                    <button type="button" class="btn btn-primary" onclick="updateAll()">Update</button>
+                </div>
+                {% endif %}
+                {% if type=='create' %}
+                <div style="padding: 20px;">
+                    <button type="button" class="btn btn-primary" onclick="submitAll()">Create</button>
+                </div>
+                {% endif %}
+
+                <div>
+                    <!--            <button class="btn btn-primary" onclick="submitAll()">Create</button>-->
+                    <!--            <button class="btn btn-danger text-right" onclick="confirm('Are you sure you want to reset the page? This will reload the page',location.reload())"> Reset All</button>-->
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

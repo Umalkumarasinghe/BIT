@@ -1,0 +1,55 @@
+{% extends "base/base.html" %}
+{% block header %} production_teams
+        <div style="margin-top: 10px">
+            <button type="button" class="btn btn-primary" onclick="window.location.href='{{ url_for('production_team_actions_controller.create_production_teams_view') }}';">Create</button>
+        </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div style="margin-top: 20px">
+                                    <div class="{{ category }}">{{ message }}</div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                        <tr class="text-center">
+                            <th>production_team Name</th>
+                            <th>Email</th>
+                            <th>Contact No.</th>
+                            <th>Address</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for production_team in production_teams %}
+                            <tr class="text-center">
+                                <td>{{ production_team.production_team_name }}</td>
+                                <td width="25%">{{ production_team.production_team_email }}</td>
+                                <td width="25%">{{ production_team.production_team_contact_no }}</td>
+                                <td>{{ production_team.production_team_address }}</td>
+                                <td width="11%">
+                                    {#<button type="button" class="btn-sm btn btn-info" onclick="window.location.href='{{ url_for('production_team_actions_controller.view_production_team_view', id=user.id) }}';"><span class="fa fa-eye"></span></button>#}
+                                    <button type="button" class="btn-sm btn btn-secondary" onclick="window.location.href='{{ url_for('production_team_actions_controller.edit_production_team_view', id=production_team.id) }}';"><span class="fa fa-edit"></span></button>
+                                    <button type="button" class="btn-sm btn btn-danger" onclick="window.location.href='{{ url_for('production_team_actions_controller.delete_production_team', id=production_team.id) }}';"><span class="fa fa-trash"></span></button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

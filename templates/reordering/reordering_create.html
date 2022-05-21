@@ -1,0 +1,79 @@
+{% extends "base/base.html" %}
+{% block header %}
+{% if type in ['view', 'edit'] %}
+{{ reordering.reordering_name }}
+{% else %}
+Create Re-Ordering Rule
+{% endif %}
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div style="margin-top: 20px" class="container-login100-form-btn alert alert-danger">
+                    {% for message in messages %}
+                    {{ message }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+            </div>
+            <form role="form" method="POST" action="{{ url_for('reordering_actions_controller.create_reordering') if type == 'create' else url_for('reordering_actions_controller.edit_reordering')}}">
+                <div class="card-body">
+                    {% if type in ['view', 'edit'] %}
+                    {{ form.id(hidden=True, value=reordering.id) }}
+                    {% endif %}
+                    <table width="100%">
+                        <div style="font-size: 20px; margin-bottom: 10px;" class="text-primary"><b>reordering Information</b></div>
+                        <tr>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.supplier_id.label }}
+                                    {{ form.supplier_id(placeholder="Package", class="form-control", maxlength=255, readonly=True if type=='view' else False)}}
+                                </div>
+                            </td>
+                            <td width="6%"></td>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.item.item_name.label }}
+                                    {{ form.item.item_name(placeholder="Price", class="form-control", maxlength=120, readonly=True if type=='view' else False, value=object.item.item_name if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                        <tr>
+                            <td colspan="3">
+                                <div class="form-group">
+                                    {{ form.maximum_quantity.label }}
+                                    {{ form.maximum_quantity(placeholder="Price", class="form-control", maxlength=120, readonly=True if type=='view' else False, value=object.maximum_quantity if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        </tr><tr>
+                            <td colspan="3">
+                                <div class="form-group">
+                                    {{ form.minimum_quantity.label }}
+                                    {{ form.minimum_quantity(placeholder="Price", class="form-control", maxlength=120, readonly=True if type=='view' else False, value=object.minimum_quantity if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+                {% if type=='edit' %}
+                <div style="padding: 20px;">
+                    <input type="submit" value="Update" class="btn btn-primary">
+                </div>
+                {% endif %}
+                {% if type=='create' %}
+                <div style="padding: 20px;">
+                    <input type="submit" value="Create" class="btn btn-primary">
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "base/base.html" %}
+{% block header %}
+{% if type in ['view', 'edit'] %}
+{{ item.item_name }}
+{% else %}
+Create Item
+{% endif %}
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div style="margin-top: 20px" class="container-login100-form-btn alert alert-danger">
+                    {% for message in messages %}
+                    {{ message }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+            </div>
+            <form role="form" method="POST" action="{{ url_for('item_actions_controller.create_item') if type == 'create' else url_for('item_actions_controller.edit_item')}}">
+                <div class="card-body">
+                    {% if type in ['view', 'edit'] %}
+                    {{ form.id(hidden=True, value=item.id) }}
+                    {% endif %}
+                    <table width="100%">
+                        <div style="font-size: 20px; margin-bottom: 10px;" class="text-primary"><b>Item Information</b></div>
+                        <tr>
+                            <td colspan="3">
+                                <div class="form-group">
+                                    {{ form.item_name.label }}
+                                    {{ form.item_name(placeholder="Item Name", class="form-control form-control-lg", maxlength=200, readonly=True if type=='view' else False, value=item.item_name if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">
+                                <div class="form-group">
+                                    {{ form.item_code.label }}
+                                    {{ form.item_code(placeholder="Item Code", class="form-control form-control-lg", maxlength=200, readonly=True if type=='view' else False, value=item.item_name if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.item_quantity.label }}
+                                    {{ form.item_quantity(placeholder="Item quantity", class="form-control", maxlength=250, readonly=True if type=='view' else False, value=item.item_quantity if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                            <td width="6%"></td>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.item_unit_price.label }}
+                                    {{ form.item_unit_price(placeholder="Unit Price", class="form-control", maxlength=50, readonly=True if type=='view' else False, value=item.item_unit_price if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+                {% if type=='edit' %}
+                <div style="padding: 20px;">
+                    <input type="submit" value="Update" class="btn btn-primary">
+                </div>
+                {% endif %}
+                {% if type=='create' %}
+                <div style="padding: 20px;">
+                    <input type="submit" value="Create" class="btn btn-primary">
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

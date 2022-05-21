@@ -1,0 +1,55 @@
+{% extends "base/base.html" %}
+{% block header %} Items
+        <div style="margin-top: 10px">
+            <button type="button" class="btn btn-primary" onclick="window.location.href='{{ url_for('item_actions_controller.create_items_view') }}';">Create</button>
+        </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div style="margin-top: 20px">
+                                    <div class="{{ category }}">{{ message }}</div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                        <tr class="text-center">
+                            <th>Item Name</th>
+                            <th>Item Code</th>
+                            <th>Item Quantity</th>
+                            <th>Unit Price</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in items %}
+                            <tr class="text-center">
+                                <td>{{ item.item_name }}</td>
+                                <td width="25%">{{ item.item_code }}</td>
+                                <td width="25%">{{ item.item_quantity }}</td>
+                                <td>{{ item.item_unit_price }}</td>
+                                <td width="11%">
+                                    {#<button type="button" class="btn-sm btn btn-info" onclick="window.location.href='{{ url_for('item_actions_controller.view_item_view', id=user.id) }}';"><span class="fa fa-eye"></span></button>#}
+                                    <button type="button" class="btn-sm btn btn-secondary" onclick="window.location.href='{{ url_for('item_actions_controller.edit_item_view', id=item.id) }}';"><span class="fa fa-edit"></span></button>
+                                    <button type="button" class="btn-sm btn btn-danger" onclick="window.location.href='{{ url_for('item_actions_controller.delete_item', id=item.id) }}';"><span class="fa fa-trash"></span></button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,176 @@
+{% extends "base/base.html" %}
+{% block header %}
+{% if type in ['view', 'edit'] %}
+{{ object.name }}
+{% else %}
+Create Purchase Order
+{% endif %}
+{% endblock %}
+{% block content %}
+<script src="../../static/custom/js/purchase.js"></script>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div style="margin-top: 20px" class="container-login100-form-btn alert alert-danger">
+                    {% for message in messages %}
+                    {{ message }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+            </div>
+            <form role="form" method="POST">
+                <div class="card-body">
+                    {% if type in ['view', 'edit'] %}
+                    {{ form.id(hidden=True, value=object.id) }}
+                    {% endif %}
+                    <table width="100%">
+                        {% if type in ['create'] %}
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item active">Pending</li>
+                                <li class="breadcrumb-item">Confirmed</li>
+                                <li class="breadcrumb-item">GRN Created</li>
+                            </ol>
+                        </nav>
+                        {% endif %}
+                        {% if type in ['view', 'edit'] %}
+                        <nav aria-label="breadcrumb">
+                            {% if object.purchase_order_state == 'Pending' %}
+                            <ol class="breadcrumb text-right">
+                                <li class="breadcrumb-item active">Pending</li>
+                                <li class="breadcrumb-item">Confirmed</li>
+                                <li class="breadcrumb-item">GRN Created</li>
+                            </ol>
+                            {% endif %}
+                            {% if object.purchase_order_state == 'Confirmed' %}
+                            <ol class="breadcrumb text-right">
+                                <li class="breadcrumb-item">Pending</li>
+                                <li class="breadcrumb-item active">Confirmed</li>
+                                <li class="breadcrumb-item">GRN Created</li>
+                            </ol>
+                            {% endif %}
+                        </nav>
+                        {% endif %}
+                        <div style="font-size: 20px; margin-bottom: 10px;" class="text-primary"><b>Basic Information</b></div>
+                        <tr>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.supplier_id.label }}
+                                    {{ form.supplier_id(placeholder="Package", class="form-control", maxlength=255, readonly=True if type=='view' else False)}}
+                                </div>
+                            </td>
+                            <td width="6%"></td>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.purchase_order_name.label }}
+                                    {{ form.purchase_order_name(placeholder="Price", class="form-control", maxlength=120, readonly=True if type=='view' else False, value=object.purchase_order_name if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.purchase_order_created_date.label }}
+                                    {{ form.purchase_order_created_date(placeholder="Start Date", class="form-control",value=object.purchase_order_created_date if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                            <td width="6%"></td>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.purchase_order_expected_date.label }}
+                                    {{ form.purchase_order_expected_date(placeholder="End Date", class="form-control", value=object.purchase_order_expected_date if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.purchase_total.label }}
+                                    {{ form.purchase_total(type="number", readonly=True, class="form-control",value=object.purchase_total if type in ['view', 'edit'] else 0)}}
+                                </div>
+                            </td>
+                            <td width="6%"></td>
+                        </tr>
+                    </table>
+                    <div>
+                        <table class="table table-bordered table-striped" id="userTable">
+                            <tr class="text-center">
+                                <td width="20%"><b>Item</b></td>
+                                <td width="20%"><b>quantity</b></td>
+                                <td width="20%"><b>Unit price</b></td>
+                                <td width="20%"><b>Total price</b></td>
+                                <td width="20%"><b>Action</b></td>
+                            </tr>
+                            {% if type in ['view', 'edit'] %}
+                            {% for item in items %}
+                            <tr class="text-center" data-itemid="{{item.id}}">
+                                <td>{{ item.item.item_name }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>{{ item.unit_price }}</td>
+                                <td>{{ item.subtotal }}</td>
+                                <td>
+                                    <button type='button' class='btn btn-dark btn-sm mr-2' onclick='editItem(this)' data-itemid="{{item.id}}" data-item_product_id="{{item.item.id}}"><span class="fa fa-edit"></span></button>
+                                    <button type='button' class='btn btn-danger btn-sm' onclick='deleteRow(this)' data-itemid=" + itemId + "><span class="fa fa-trash"></span></button>
+                                </td>
+                                <script>
+                                    var itemId = {{ item.id }};
+                                    var unit_price = "{{ item.unit_price }}";
+                                    var quantity = "{{ item.quantity }}";
+                                    var subtotal = "{{ item.subtotal }}";
+                                    var item_item_price = "{{ item.item_price }}";
+                                    var item_product_id = "{{ item.item.id }}";
+
+                                    addToModel({ itemId, item_product_id, unit_price, quantity, subtotal});
+                                    console.log(dataModel);
+                                    itemId = {{ item.id }} + 1;
+                                </script>
+                            </tr>
+                            {% endfor %}
+                            {% endif %}
+
+                            {% if type in ['view', 'edit'] %}
+                            <script>
+                                 dataModel.purchase_orderData.id = {{ object.id }};
+                                 console.log(dataModel);
+                            </script>
+                            {% endif %}
+                        </table>
+                    </div>
+                    <div>
+                        <table class="table table-bordered table-striped " id="inputPurchaseTable">
+                            <tr>
+                                <td width="20%">{{ form.item_product_id(placeholder="Items", onchange="OnchangeProduct()", readonly=True if type=='view' else False)}}</td>
+                                <td width="25%"><input type="number" id="quantity" onchange="calculateTotal()" name="quantity" min="1"></td>
+                                <td width="25%"><input type="number" id="unit_price" onchange="calculateTotal()" name="unit_price"></td>
+                                <td width="25%"><input type="number" id="subtotal" name="subtotal"></td>
+                                <td width="15%"><input type="button" id="btnItemForm" value="Add" onclick="fillTable()"/>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                {% if type=='edit' %}
+                <div style="padding: 20px;">
+                    <button type="submit" class="btn btn-primary" onclick="updateAll()">Update</button>
+                    <button type="submit" class="btn btn-primary" onclick="confirmPo()">Confirm</button>
+                    <button type="submit" class="btn btn-primary" onclick="createGrn()">Create GRN</button>
+                </div>
+                {% endif %}
+                {% if type=='create' %}
+                <div style="padding: 20px;">
+                    <button type="submit" class="btn btn-primary" onclick="submitAll()">Create</button>
+                </div>
+                {% endif %}
+
+                <div>
+                    <!--            <button class="btn btn-primary" onclick="submitAll()">Create</button>-->
+                    <!--            <button class="btn btn-danger text-right" onclick="confirm('Are you sure you want to reset the page? This will reload the page',location.reload())"> Reset All</button>-->
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

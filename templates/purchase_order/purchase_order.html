@@ -1,0 +1,62 @@
+{% extends "base/base.html" %}
+{% block header %}
+        <div style="margin-top: 10px">
+            {% if type in ['vie w_purchase_order', 'edit'] %}
+            Confirmed Orders
+            <button type="button" class="btn btn-primary" onclick="window.location.href='{{ url_for('purchase_order_actions_controllers.create_purchase_order_view') }}';">Create New</button>
+            {% else %}
+            Purchase Orders
+            <button type="button" class="btn btn-primary" onclick="window.location.href='{{ url_for('purchase_order_actions_controllers.create_purchase_order_view') }}';">Create New</button>
+            <button type="submit" class="btn btn-primary" onclick="window.location.href='{{ url_for('purchase_order_actions_controllers.view_confirmed_purchase_order') }}';">View Confirmed Orders</button>
+            {% endif %}
+        </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div style="margin-top: 20px">
+                                    <div class="{{ category }}">{{ message }}</div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                        <tr class="text-center">
+                            <th>Supplier Name</th>
+                            <th>Order State</th>
+                            <th>Created Date</th>
+                            <th>Expected Date</th>
+                            <th>View Info</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for object in objects %}
+                            <tr class="text-center">
+                                <td width="25%">{{ object.supplier.supplier_name }}</td>
+                                <td width="25%">{{ object.purchase_order_state }}</td>
+                                <td>{{ object.purchase_order_created_date }}</td>
+                                <td>{{ object.purchase_order_expected_date }}</td>
+                                <td width="11%">
+                                    {#                                    <button type="button" class="btn-sm btn btn-info" onclick="window.location.href='{{ url_for('purchase_order_actions_controller.view_purchase_order_view', id=user.id) }}';"><span class="fa fa-eye"></span></button>#}
+                                    <button type="button" class="btn-sm btn btn-secondary" onclick="window.location.href='{{ url_for('purchase_order_actions_controllers.edit_purchase_order_view', id=object.id) }}';"><span class="fa fa-edit"></span></button>
+                                    <button type="button" class="btn-sm btn btn-danger" onclick="window.location.href='{{ url_for('purchase_order_actions_controllers.delete_purchase_order', id=object.id) }}';"><span class="fa fa-trash"></span></button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

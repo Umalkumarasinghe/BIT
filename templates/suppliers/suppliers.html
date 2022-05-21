@@ -1,0 +1,55 @@
+{% extends "base/base.html" %}
+{% block header %} Suppliers
+        <div style="margin-top: 10px">
+            <button type="button" class="btn btn-primary" onclick="window.location.href='{{ url_for('supplier_actions_controller.create_suppliers_view') }}';">Create</button>
+        </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div style="margin-top: 20px">
+                                    <div class="{{ category }}">{{ message }}</div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                        <tr class="text-center">
+                            <th>Supplier Name</th>
+                            <th>Email</th>
+                            <th>Contact No.</th>
+                            <th>Address</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for supplier in suppliers %}
+                            <tr class="text-center">
+                                <td>{{ supplier.supplier_name }}</td>
+                                <td width="25%">{{ supplier.supplier_email }}</td>
+                                <td width="25%">{{ supplier.supplier_contact_no }}</td>
+                                <td>{{ supplier.supplier_address }}</td>
+                                <td width="11%">
+                                    {#<button type="button" class="btn-sm btn btn-info" onclick="window.location.href='{{ url_for('supplier_actions_controller.view_supplier_view', id=user.id) }}';"><span class="fa fa-eye"></span></button>#}
+                                    <button type="button" class="btn-sm btn btn-secondary" onclick="window.location.href='{{ url_for('supplier_actions_controller.edit_supplier_view', id=supplier.id) }}';"><span class="fa fa-edit"></span></button>
+                                    <button type="button" class="btn-sm btn btn-danger" onclick="window.location.href='{{ url_for('supplier_actions_controller.delete_supplier', id=supplier.id) }}';"><span class="fa fa-trash"></span></button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

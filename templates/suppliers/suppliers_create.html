@@ -1,0 +1,78 @@
+{% extends "base/base.html" %}
+{% block header %}
+{% if type in ['view', 'edit'] %}
+{{ supplier.supplier_name }}
+{% else %}
+Create Member
+{% endif %}
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div style="margin-top: 20px" class="container-login100-form-btn alert alert-danger">
+                    {% for message in messages %}
+                    {{ message }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+            </div>
+            <form role="form" method="POST" action="{{ url_for('supplier_actions_controller.create_supplier') if type == 'create' else url_for('supplier_actions_controller.edit_supplier')}}">
+                <div class="card-body">
+                    {% if type in ['view', 'edit'] %}
+                    {{ form.id(hidden=True, value=supplier.id) }}
+                    {% endif %}
+                    <table width="100%">
+                        <div style="font-size: 20px; margin-bottom: 10px;" class="text-primary"><b>Basic Information</b></div>
+                        <tr>
+                            <td colspan="3">
+                                <div class="form-group">
+                                    {{ form.supplier_name.label }}
+                                    {{ form.supplier_name(placeholder="Supplier Name", class="form-control form-control-lg", maxlength=200, readonly=True if type=='view' else False, value=supplier.supplier_name if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.supplier_email.label }}
+                                    {{ form.supplier_email(placeholder="E-Mail Address", class="form-control", maxlength=250, readonly=True if type=='view' else False, value=supplier.supplier_email if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                            <td width="6%"></td>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.supplier_contact_no.label }}
+                                    {{ form.supplier_contact_no(placeholder="Contact Number", class="form-control", maxlength=50, readonly=True if type=='view' else False, value=supplier.supplier_contact_no if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">
+                                <div class="form-group">
+                                    {{ form.supplier_address.label }}
+                                    {{ form.supplier_address(placeholder="Supplier Name", class="form-control form-control-lg", maxlength=200, readonly=True if type=='view' else False, value=supplier.supplier_address if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                {% if type=='edit' %}
+                <div style="padding: 20px;">
+                    <input type="submit" value="Update" class="btn btn-primary">
+                </div>
+                {% endif %}
+                {% if type=='create' %}
+                <div style="padding: 20px;">
+                    <input type="submit" value="Create" class="btn btn-primary">
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

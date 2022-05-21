@@ -1,0 +1,170 @@
+{% extends "base/base.html" %}
+{% block header %}
+{% if type in ['view', 'edit'] %}
+{{ member.calling_name }}
+{% else %}
+Create Member
+{% endif %}
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div style="margin-top: 20px" class="container-login100-form-btn alert alert-danger">
+                    {% for message in messages %}
+                    {{ message }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+            </div>
+            <form role="form" method="POST" action="{{ url_for('member_actions_controller.create_member') if type == 'create' else url_for('member_actions_controller.edit_member')}}">
+                <div class="card-body">
+                    {% if type in ['view', 'edit'] %}
+                    {{ form.id(hidden=True, value=member.id) }}
+                    {% endif %}
+                    <table width="100%">
+                        <div style="font-size: 20px; margin-bottom: 10px;" class="text-primary"><b>Basic Information</b></div>
+                        <tr>
+                            <td colspan="3">
+                                <div class="form-group">
+                                    {{ form.full_name.label }}
+                                    {{ form.full_name(placeholder="Name in Full", class="form-control form-control-lg", maxlength=200, readonly=True if type=='view' else False, value=member.full_name if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.address.label }}
+                                    {{ form.address(placeholder="Address", class="form-control", maxlength=250, readonly=True if type=='view' else False, value=member.address if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                            <td width="6%"></td>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.calling_name.label }}
+                                    {{ form.calling_name(placeholder="Address", class="form-control", maxlength=50, readonly=True if type=='view' else False, value=member.calling_name if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.email.label }}
+                                    {{ form.email(placeholder="Email", class="form-control", maxlength=120, type="email", readonly=True if type=='view' else False, value=member.email if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                            <td width="6%"></td>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.nic_no.label }}
+                                    {{ form.nic_no(placeholder="NIC Number", class="form-control", onchange="OnchangeNic(this.value)", maxlength=12, readonly=True if type=='view' else False, value=member.nic if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.date_of_birth.label }}
+                                    {{ form.date_of_birth(placeholder="Date of Birth", class="form-control", readonly=True, value=member.date_of_birth if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                            <td width="6%"></td>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.age.label }}
+                                    {{ form.age(placeholder="Age", class="form-control", readonly=True, value=member.age if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {% if type in ['view', 'edit'] %}
+                                    {% if member.gender == 'male' %}
+                                    <div class="custom-control custom-radio">
+                                        <input class="custom-control-input" type="radio" id="male" name="gender" value="male" checked>
+                                        <label for="male" class="custom-control-label">Male</label>
+                                    </div>
+                                    <div class="custom-control custom-radio">
+                                        <input class="custom-control-input" type="radio" id="female" name="gender" value="female">
+                                        <label for="female" class="custom-control-label">Female</label>
+                                    </div>
+                                    {% else %}
+                                    <div class="custom-control custom-radio">
+                                        <input class="custom-control-input" type="radio" id="male" name="gender" value="male">
+                                        <label for="male" class="custom-control-label">Male</label>
+                                    </div>
+                                    <div class="custom-control custom-radio">
+                                        <input class="custom-control-input" type="radio" id="female" name="gender" value="female" checked>
+                                        <label for="female" class="custom-control-label">Female</label>
+                                    </div>
+                                    {% endif %}
+                                    {% else %}
+                                    <div class="custom-control custom-radio">
+                                        <input class="custom-control-input" type="radio" id="male" name="gender" value="male">
+                                        <label for="male" class="custom-control-label">Male</label>
+                                    </div>
+                                    <div class="custom-control custom-radio">
+                                        <input class="custom-control-input" type="radio" id="female" name="gender" value="female">
+                                        <label for="female" class="custom-control-label">Female</label>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td width="6%"></td>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.contact_no.label }}
+                                    {{ form.contact_no(placeholder="Contact Number", class="form-control", maxlength=20, readonly=True if type=='view' else False, value=member.contact_no if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr><td colspan="3"><div style="font-size: 20px; margin-bottom: 10px; margin-top: 10px" class="text-primary"><b>Emergency Contact Information</b></div></td></tr>
+                        <tr>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.emergency_contact.label }}
+                                    {{ form.emergency_contact(placeholder="Emergency Contact Person Name", class="form-control", maxlength=120, readonly=True if type=='view' else False, value=member.emergency_contact if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                            <td width="6%"></td>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.emergency_contact_no.label }}
+                                    {{ form.emergency_contact_no(placeholder="Emergency Contact Phone Number", class="form-control", maxlength=20, readonly=True if type=='view' else False, value=member.emergency_contact_no if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.emergency_contact_relationship.label }}
+                                    {{ form.emergency_contact_relationship(placeholder="Emergency Contact Relationship", class="form-control", maxlength=120, readonly=True if type=='view' else False, value=member.emergency_contact_relationship if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                            <td width="6%"></td>
+                            <td width="47%">
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                {% if type=='edit' %}
+                <div style="padding: 20px;">
+                    <input type="submit" value="Update" class="btn btn-primary">
+                </div>
+                {% endif %}
+                {% if type=='create' %}
+                <div style="padding: 20px;">
+                    <input type="submit" value="Create" class="btn btn-primary">
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
