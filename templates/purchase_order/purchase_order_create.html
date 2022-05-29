@@ -7,6 +7,7 @@ Create Purchase Order
 {% endif %}
 {% endblock %}
 {% block content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="../../static/custom/js/purchase.js"></script>
 <div class="row">
     <div class="col-12">
@@ -53,6 +54,13 @@ Create Purchase Order
                                 <li class="breadcrumb-item">GRN Created</li>
                             </ol>
                             {% endif %}
+                            {% if object.purchase_order_state == 'GRN Created' %}
+                            <ol class="breadcrumb text-right">
+                                <li class="breadcrumb-item">Pending</li>
+                                <li class="breadcrumb-item">Confirmed</li>
+                                <li class="breadcrumb-item active">GRN Created</li>
+                            </ol>
+                            {% endif %}
                         </nav>
                         {% endif %}
                         <div style="font-size: 20px; margin-bottom: 10px;" class="text-primary"><b>Basic Information</b></div>
@@ -65,10 +73,12 @@ Create Purchase Order
                             </td>
                             <td width="6%"></td>
                             <td width="47%">
+                                {% if type in ['view', 'edit'] %}
                                 <div class="form-group">
                                     {{ form.purchase_order_name.label }}
-                                    {{ form.purchase_order_name(placeholder="Price", class="form-control", maxlength=120, readonly=True if type=='view' else False, value=object.purchase_order_name if type in ['view', 'edit'] else False)}}
+                                    {{ form.purchase_order_name(placeholder="Price", class="form-control", maxlength=120, readonly=True, value=object.purchase_order_name if type in ['view', 'edit'] else False)}}
                                 </div>
+                                {% endif %}
                             </td>
                         </tr>
                         <tr>
@@ -97,10 +107,10 @@ Create Purchase Order
                         </tr>
                     </table>
                     <div>
-                        <table class="table table-bordered table-striped" id="userTable">
+                        <table class="table table-bordered table-striped" id="poTable">
                             <tr class="text-center">
                                 <td width="20%"><b>Item</b></td>
-                                <td width="20%"><b>quantity</b></td>
+                                <td width="20%"><b>Quantity</b></td>
                                 <td width="20%"><b>Unit price</b></td>
                                 <td width="20%"><b>Total price</b></td>
                                 <td width="20%"><b>Action</b></td>
@@ -154,14 +164,18 @@ Create Purchase Order
                 </div>
                 {% if type=='edit' %}
                 <div style="padding: 20px;">
-                    <button type="submit" class="btn btn-primary" onclick="updateAll()">Update</button>
-                    <button type="submit" class="btn btn-primary" onclick="confirmPo()">Confirm</button>
-                    <button type="submit" class="btn btn-primary" onclick="createGrn()">Create GRN</button>
+                    {% if object.purchase_order_state == 'Pending' %}
+                    <button type="button" class="btn btn-primary" onclick="updateAll()">Update</button>
+                    <button type="button" class="btn btn-primary" onclick="confirmPo()">Confirm</button>
+                    {% endif %}
+                    {% if object.purchase_order_state == 'Confirmed' %}
+                    <button type="button" class="btn btn-primary" onclick="createGrn()">Create GRN</button>
+                    {% endif %}
                 </div>
                 {% endif %}
                 {% if type=='create' %}
                 <div style="padding: 20px;">
-                    <button type="submit" class="btn btn-primary" onclick="submitAll()">Create</button>
+                    <button type="button" class="btn btn-primary" onclick="submitAll()">Create</button>
                 </div>
                 {% endif %}
 

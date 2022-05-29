@@ -1,11 +1,11 @@
 var dataModel = {
-    purchase_orderData: {
+    grnData: {
         id: '',
         supplier_id: '',
-        purchase_order_name: '',
-        purchase_order_created_date: '',
-        purchase_order_expected_date: '',
-        purchase_total: '',
+        grn_order_name: '',
+        grn_created_date: '',
+        grn_expected_date: '',
+        grn_state:''
     },
     itemData: [] // object array this will fill when added to table
 }
@@ -20,10 +20,10 @@ var editingItemId = null;
 
 function fillTable() {
     if (
-        document.getElementById("item_product_id").value != "" &&
-        document.getElementById("quantity").value != "" &&
-        document.getElementById("unit_price").value != "" &&
-        document.getElementById("subtotal").value != ""
+        document.getElementById("item_product_id").value != "" ||
+        document.getElementById("demand_quantity").value != "" ||
+        document.getElementById("received_quantity").value != "" ||
+        document.getElementById("remaining_quantity").value != ""
     ) {
         if (isEdit) {
             // selecting row to update values in the table. We use editingItemId value here set while in the editItem function.
@@ -34,32 +34,33 @@ function fillTable() {
             //currentEditingRow.children[0].innerHTML = document.getElementById("itemId").value
 
             var item_product_id = document.getElementById("item_product_id").value;
-            var quantity = document.getElementById("quantity").value;
-            var unit_price = document.getElementById("unit_price").value;
-            var subtotal = document.getElementById("subtotal").value;
+            var demand_quantity = document.getElementById("demand_quantity").value;
+            var received_quantity = document.getElementById("received_quantity").value;
+            var remaining_quantity = document.getElementById("remaining_quantity").value;
+            console.log(document.getElementById("remaining_quantity").value);
             var item_product_id_element = document.getElementById("item_product_id");
             var subtotal_text = item_product_id_element.options[item_product_id_element.selectedIndex].innerHTML;
             // get new valued
             var new_item_product_id = document.getElementById("item_product_id").value;
-            var new_quantity = document.getElementById("quantity").value;
-            var new_unit_price = document.getElementById("unit_price").value;
-            var new_subtotal = document.getElementById("subtotal").value;
+            var new_demand_quantity = document.getElementById("demand_quantity").value;
+            var new_received_quantity = document.getElementById("received_quantity").value;
+            var new_remaining_quantity = document.getElementById("remaining_quantity").value;
             var new_item_product_id_element = document.getElementById("item_product_id");
             var new_subtotal_text = new_item_product_id_element.options[new_item_product_id_element.selectedIndex].innerHTML;
             ;
             // update rate,qty in table
             currentEditingRow.children[0].innerHTML = new_subtotal_text;
-            currentEditingRow.children[1].innerHTML = new_quantity;
-            currentEditingRow.children[2].innerHTML = new_unit_price;
-            currentEditingRow.children[3].innerHTML = new_subtotal;
+            currentEditingRow.children[1].innerHTML = new_demand_quantity;
+            currentEditingRow.children[2].innerHTML = new_received_quantity;
+            currentEditingRow.children[3].innerHTML = new_remaining_quantity;
 
 
             // update rate,qty in dataModel.itemData
             var item = dataModel.itemData.find(x => x.itemId == editingItemId);
-            debugger;
-            item.quantity = quantity;
-            item.unit_price = unit_price;
-            item.subtotal = subtotal;
+            item.item_product_id = item_product_id;
+            item.demand_quantity = demand_quantity;
+            item.received_quantity = received_quantity;
+            item.remaining_quantity = remaining_quantity;
 
 
             // reset editingItemId
@@ -67,11 +68,11 @@ function fillTable() {
             document.getElementById("btnItemForm").value = 'Add';
 
             //to confirm
-            //console.log(dataModel.itemData);
+            console.log(dataModel.itemData);
 
         }
         else {
-            var table = document.getElementById("poTable");
+            var table = document.getElementById("grnTable");
             // adding new row and cells
             var row = table.insertRow(-1);
             var cell1 = row.insertCell(0);
@@ -84,9 +85,9 @@ function fillTable() {
             // Fetching Values
 //            var itemId = document.getElementById("itemId").value;
             var item_product_id = document.getElementById("item_product_id").value;
-            var quantity = document.getElementById("quantity").value;
-            var unit_price = document.getElementById("unit_price").value;
-            var subtotal = document.getElementById("subtotal").value;
+            var demand_quantity = document.getElementById("demand_quantity").value;
+            var received_quantity = document.getElementById("received_quantity").value;
+            var remaining_quantity = document.getElementById("remaining_quantity").value;
             var item_product_id_element = document.getElementById("item_product_id");
             var subtotal_text = item_product_id_element.options[item_product_id_element.selectedIndex].innerHTML;
 
@@ -94,9 +95,9 @@ function fillTable() {
             //Setting Values
 //            cell1.innerHTML = itemId;
             cell1.innerHTML = subtotal_text;
-            cell2.innerHTML = quantity;
-            cell3.innerHTML = unit_price;
-            cell4.innerHTML = subtotal;
+            cell2.innerHTML = demand_quantity;
+            cell3.innerHTML = received_quantity;
+            cell4.innerHTML = remaining_quantity;
 
             // For action buttons data attribute are used to pass the id of the item for deletion and edition.
 
@@ -107,8 +108,7 @@ function fillTable() {
             row.dataset.itemid = itemId;
 
             // Add new data to model
-            addToModel({ itemId, item_product_id, quantity, unit_price, subtotal });
-            console.log(purchase_order_expected_date);
+            addToModel({ itemId, item_product_id, demand_quantity, received_quantity, remaining_quantity });
             itemId++;
         }
 
@@ -119,20 +119,10 @@ function fillTable() {
 
         // Clear values in fields after adding/Editing
 
-        document.getElementById("quantity").value = '';
-        document.getElementById("unit_price").value = '';
-        document.getElementById("subtotal").value = '';
+        document.getElementById("demand_quantity").value = '';
+        document.getElementById("received_quantity").value = '';
+        document.getElementById("remaining_quantity").value = '';
 
-        var poTable = document.getElementById('poTable');
-        var po_total = 0
-        for (let i = 0; i < poTable.rows.length; i++) {
-            if (i >= "1") {
-                let row = poTable.rows[i];
-                let col = row.cells[3].innerHTML;
-                po_total += parseInt(col)
-            }
-        }
-        document.getElementById('purchase_total').value = po_total
     }
 }
 
@@ -151,16 +141,7 @@ function deleteRow(row) {
     // Array.splice method removes the element at passed index, 1 is to remove one element from that index.
     dataModel.itemData.splice(indexTobeRemoved, 1)
 
-    var poTable = document.getElementById('poTable');
-        var po_total = 0
-        for (let i = 0; i < poTable.rows.length; i++) {
-            if (i >= "1") {
-                let row = poTable.rows[i];
-                let col = row.cells[3].innerHTML;
-                po_total += parseInt(col)
-            }
-        }
-    document.getElementById('purchase_total').value = po_total
+    //console.log(dataModel.itemData);
 
 }
 
@@ -191,31 +172,19 @@ function editItem(Obj) {
 
     // set other values
     document.getElementById("item_product_id").value = item.item_product_id;
-    document.getElementById("quantity").value = item.quantity;
-    document.getElementById("unit_price").value = item.unit_price;
-    document.getElementById("subtotal").value = item.subtotal;
+    document.getElementById("demand_quantity").value = item.demand_quantity;
+    document.getElementById("received_quantity").value = item.received_quantity;
+    document.getElementById("remaining_quantity").value = item.remaining_quantity;
+    document.getElementById("remaining_quantity").max = item.remaining_quantity;
 
     //set button text to edit
     document.getElementById("btnItemForm").value = 'Update';
 }
 
 function submitAll(){
-    if (document.getElementById("supplier_id").value == ""){
-        alert("Supplier field must be filled out");
-        return false;
-    }
-    if (document.getElementById("purchase_order_created_date").value == ""){
-        alert("Created date field must be filled out");
-        return false;
-    }
-    if (document.getElementById("purchase_order_expected_date").value == ""){
-        alert("Expected Date field must be filled out");
-        return false;
-    }
-
-
     // set order details
     dataModel.purchase_orderData.supplier_id =  document.getElementById("supplier_id").value
+    dataModel.purchase_orderData.name =  document.getElementById("purchase_order_name").value
     dataModel.purchase_orderData.purchase_order_created_date =  document.getElementById("purchase_order_created_date").value
     dataModel.purchase_orderData.purchase_order_expected_date =  document.getElementById("purchase_order_expected_date").value
     dataModel.purchase_orderData.purchase_total =  document.getElementById("purchase_total").value
@@ -228,16 +197,16 @@ function submitAll(){
     console.log('FINAL OBJECT', dataModel);
     console.log(JSON.stringify(dataModel));
     $.ajax({
-        type: 'POST',
-        url: '/create_purchase_order',
-        data: {values : JSON.stringify(dataModel)} ,
-        dataType: 'json',
-        success: function (response) {
-                          window.location.href = "/edit_purchase_order_view?id=" + response.id;
-                          alert("Successfully Created")
-                          },
+         type: 'POST',
+         url: '/create_purchase_order',
+         data: { 'values' : JSON.stringify(dataModel) } ,
+         dataType: 'json',
+         success: function (response) {
+                           document.getElementById("price").value = response.price;
+                           document.getElementById("purchase_order_expected_date").value = response.purchase_order_expected_date;
+                        },
         failure: function (response) {
-                          console.log(response);
+            alert("failure")
         }
     });
 }
@@ -263,8 +232,7 @@ function createGrn(){
          data: { 'values' : JSON.stringify(dataModel) } ,
          dataType: 'json',
          success: function (response) {
-            window.location.href = "/edit_grn_view?id=" + response.id;
-            alert("GRN Created")
+                           window.location.href = "/view_purchase_order";
         },
         failure: function (response) {
             window.location.href = "/view_purchase_order";
@@ -274,11 +242,12 @@ function createGrn(){
 
 function updateAll(){
     // set order details
-    dataModel.purchase_orderData.supplier_id =  document.getElementById("supplier_id").value
-    dataModel.purchase_orderData.name =  document.getElementById("purchase_order_name").value
-    dataModel.purchase_orderData.purchase_order_created_date =  document.getElementById("purchase_order_created_date").value
-    dataModel.purchase_orderData.purchase_order_expected_date =  document.getElementById("purchase_order_expected_date").value
-    dataModel.purchase_orderData.purchase_total =  document.getElementById("purchase_total").value
+    dataModel.grnData.supplier_id =  document.getElementById("supplier_id").value
+    dataModel.grnData.grn_order_name =  document.getElementById("grn_name").value
+    dataModel.grnData.grn_created_date =  document.getElementById("grn_created_date").value
+    dataModel.grnData.grn_expected_date =  document.getElementById("grn_expected_date").value
+    dataModel.grnData.grn_state =  document.getElementById("grn_state").value
+
     // items in the table already set now,
 
     // here we can handle the final data object. HTTP request or any other way to send back end
@@ -288,30 +257,29 @@ function updateAll(){
     console.log(JSON.stringify(dataModel));
     $.ajax({
          type: 'POST',
-         url: '/edit_purchase_order',
+         url: '/edit_grn',
          data: { 'values' : JSON.stringify(dataModel) } ,
          dataType: 'json',
          success: function (response) {
-            window.location.href = "/edit_purchase_order_view?id=" + response.id;
-            alert("Successfully Updated")
-                        },
+                           window.location.reload();
+        },
         failure: function (response) {
-            alert("failure")
+            window.location.reload();
+            debugger;
         }
     });
 }
 
-function confirmPo() {
+function completeGRN() {
     console.log(document.getElementById('id').value)
-    debugger;
     $.ajax({
     type: 'POST',
-    url: '/confirm_purchase_order',
-    data: {po_id: document.getElementById('id').value},
+    url: '/complete_grn',
+    data: {grn_id: document.getElementById('id').value},
     dataType: 'json',
     success: function (response) {
-        window.location.href = "/edit_purchase_order_view?id=" + response.id;
-        alert("Successfully Confirmed")
+        window.location.href = "/edit_grn_view?id=" + response.id;
+        alert("Successfully Completed")
     },
     failure: function (response) {
         window.location.href = "/view_purchase_order";

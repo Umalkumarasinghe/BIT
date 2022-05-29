@@ -2,6 +2,8 @@ from flask import Flask, render_template, Blueprint, request, flash, redirect, u
 from models.purchase_order import PurchaseOrder
 from models.purchase_order_line import PurchaseOrderLine
 from models.suppliers import Supplier
+from models.grn import Grn
+from models.grn_line import GrnLine
 from models.items import Items
 from models.users import User
 from flask_login import login_required, current_user
@@ -41,7 +43,6 @@ def get_unit_price():
 
 
 @purchase_order_actions_controllers.route('/create_purchase_order', methods=["GET", "POST"])
-@login_required
 def create_purchase_order():
     if request.method == 'POST':
         purchase_order_values = json.loads(request.form.get('values'))
@@ -50,16 +51,17 @@ def create_purchase_order():
         object = PurchaseOrder(purchase_order_state="Pending",
                                supplier_id=purchase_order_main_object.get('supplier_id'),
                                purchase_total=purchase_order_main_object.get('purchase_total'),
-                               purchase_order_name=purchase_order_main_object.get('name'),
                                purchase_order_created_date=purchase_order_main_object.get('purchase_order_created_date'),
                                purchase_order_expected_date=purchase_order_main_object.get('purchase_order_expected_date'))
         db.session.add(object)
+        db.session.flush()
+        object.purchase_order_name = "PO" + str(('{0:05d}'.format(object.id)))
         db.session.commit()
         for item in purchase_order_items:
             item_obj = PurchaseOrderLine(quantity=item.get('quantity'), subtotal=item.get('subtotal'), unit_price=item.get('unit_price'), item_id=item.get('item_product_id'), purchase_order_id=object.id)
             db.session.add(item_obj)
             db.session.commit()
-        return redirect(url_for('purchase_order_actions_controllers.view_purchase_order'))
+        return jsonify(id=object.id)
     # flash('Something went wrong.')
     return redirect(url_for('purchase_order_actions_controllers.create_purchase_order_view'))
 
@@ -104,10 +106,9 @@ def edit_purchase_order():
         purchase_order_items = purchase_order_values.get('itemData')
         vals = {
             'supplier_id': purchase_order_main_object.get('supplier_id'),
-            'purchase_order_name': purchase_order_main_object.get('purchase_order_name'),
             'purchase_order_created_date': purchase_order_main_object.get('purchase_order_created_date'),
             'purchase_order_expected_date': purchase_order_main_object.get('purchase_order_expected_date'),
-            'purchase_order_state': purchase_order_main_object.get('purchase_order_state')
+            'purchase_total': purchase_order_main_object.get('purchase_total'),
         }
         id = purchase_order_main_object.get('id')
         PurchaseOrder.query.filter(PurchaseOrder.id==id).update(vals)
@@ -115,19 +116,16 @@ def edit_purchase_order():
         PurchaseOrderLine.query.filter(PurchaseOrderLine.purchase_order_id==id).delete()
         db.session.commit()
         for item in purchase_order_items:
-            item_obj = PurchaseOrderLine(item_name_line=item.get('item_name_line'),
-                                         item_quantity_line=item.get('quantity'),
-                                         item_id=item.get('item_product_id'), purchase_order_id=id)
+            item_obj = PurchaseOrderLine(quantity=item.get('quantity'), subtotal=item.get('subtotal'), unit_price=item.get('unit_price'), item_id=item.get('item_product_id'), purchase_order_id=id)
             db.session.add(item_obj)
             db.session.commit()
-        flash('Updated Successfully', 'success')
-        return redirect_object(id)
+        return jsonify(id=id)
     flash('Something went wrong.')
     return redirect(url_for('purchase_order_actions_controllers.edit_purchase_order_view'))
 
 
 @purchase_order_actions_controllers.route('/view_confirmed_purchase_order', methods=["GET", "POST"])
-# @login_required
+@login_required
 def view_confirmed_purchase_order():
     objects = PurchaseOrder.query.filter_by(purchase_order_state='Confirmed')
     return render_template('purchase_order/purchase_order.html', objects=objects, type='confirmed_order_view')
@@ -143,8 +141,7 @@ def confirm_purchase_order():
         }
         PurchaseOrder.query.filter(PurchaseOrder.id == po_id).update(vals)
         db.session.commit()
-        return redirect_object(url_for('purchase_order_actions_controllers.edit_purchase_order_view', type='view'))
-    flash('Something went wrong.')
+        return jsonify(id=po_id)
     return redirect(url_for('purchase_order_actions_controllers.edit_purchase_order_view'))
 
 
@@ -153,28 +150,28 @@ def confirm_purchase_order():
 def create_grn():
     if request.method == 'POST':
         purchase_order_values = json.loads(request.form.get('values'))
-        purchase_order_main_object = purchase_order_values.get('purchase_orderData')
-        purchase_order_items = purchase_order_values.get('itemData')
+        main_values = purchase_order_values.get('purchase_orderData')
+        line_values = purchase_order_values.get('itemData')
+        object = Grn(supplier_id=main_values.get('supplier_id'), grn_state="Receiving",
+                     grn_created_date=datetime.now(),
+                     po_id=main_values.get('id'),
+                     grn_expected_date=main_values.get('purchase_order_expected_date'))
+        db.session.add(object)
+        db.session.flush()
+        object.grn_name = "IN/" + str(('{0:05d}'.format(object.id)))
+        db.session.commit()
         vals = {
-            'supplier_id': purchase_order_main_object.get('supplier_id'),
-            'purchase_order_name': purchase_order_main_object.get('purchase_order_name'),
-            'purchase_order_created_date': purchase_order_main_object.get('purchase_order_created_date'),
-            'purchase_order_expected_date': purchase_order_main_object.get('purchase_order_expected_date'),
-            'purchase_order_state': purchase_order_main_object.get('purchase_order_state')
+            'purchase_order_state': "GRN Created",
         }
-        id = purchase_order_main_object.get('id')
-        PurchaseOrder.query.filter(PurchaseOrder.id==id).update(vals)
+        PurchaseOrder.query.filter(PurchaseOrder.id == main_values.get('id')).update(vals)
         db.session.commit()
-        PurchaseOrderLine.query.filter(PurchaseOrderLine.purchase_order_id==id).delete()
-        db.session.commit()
-        for item in purchase_order_items:
-            item_obj = PurchaseOrderLine(item_name_line=item.get('item_name_line'),
-                                         item_quantity_line=item.get('quantity'),
-                                         item_id=item.get('item_product_id'), purchase_order_id=id)
+        for item in line_values:
+            item_obj = GrnLine(item_id=item.get('item_product_id'), demand_quantity=item.get('quantity'),
+                               received_quantity=0, remaining_quantity=item.get('quantity'),
+                               grn_id=object.id)
             db.session.add(item_obj)
             db.session.commit()
-        flash('Updated Successfully', 'success')
-        return redirect_object(url_for('purchase_order_actions_controllers.edit_purchase_order_view', type='view'))
+        return jsonify(id=object.id)
     flash('Something went wrong.')
     return redirect(url_for('purchase_order_actions_controllers.edit_purchase_order_view'))
 
@@ -194,8 +191,8 @@ def redirect_object(id):
 def delete_purchase_order():
     id = int(request.values.get('id'))
     if id:
-        #PurchaseOrder.query.filter(PurchaseOrder.id == id).delete()
-        db.session.query(PurchaseOrder).filter(PurchaseOrder.id == id).delete()
-        db.session.query(PurchaseOrderLine).filter(PurchaseOrderLine.id == id).delete()
+        PurchaseOrderLine.query.filter(PurchaseOrderLine.purchase_order_id == id).delete()
         db.session.commit()
-        return redirect(url_for('purchase_order_actions_controllers.view_purchase_order', _anchor="content", ))
+        PurchaseOrder.query.filter(PurchaseOrder.id == id).delete()
+        db.session.commit()
+        return redirect(url_for('purchase_order_actions_controllers.view_purchase_order'))

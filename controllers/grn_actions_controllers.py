@@ -99,27 +99,17 @@ def edit_grn():
         grn_values = json.loads(request.form.get('values'))
         grn_main_object = grn_values.get('grnData')
         grn_items = grn_values.get('itemData')
-        vals = {
-            'supplier_id': grn_main_object.get('supplier_id'),
-            'grn_name': grn_main_object.get('grn_name'),
-            'grn_created_date': grn_main_object.get('grn_created_date'),
-            'grn_expected_date': grn_main_object.get('grn_expected_date'),
-            'grn_state': grn_main_object.get('grn_state')
-        }
         id = grn_main_object.get('id')
-        Grn.query.filter(Grn.id == id).update(vals)
-        db.session.commit()
-        GrnLine.query.filter(GrnLine.grn_id == id).delete()
-        db.session.commit()
         for item in grn_items:
-            item_obj = GrnLine(item_name_line=item.get('item_name_line'),
-                                         item_quantity_line=item.get('quantity'), received_quantity_line=item.get('received_quantity'), item_id=item.get('item_product_id'), grn_id=id)
-            db.session.add(item_obj)
+            record = GrnLine.query.filter_by(id=item.get('itemId')).first()
+            record.received_quantity += int(item.get('remaining_quantity'))
             db.session.commit()
-        flash('Updated Successfully', 'success')
-        return redirect_object(id)
-    flash('Something went wrong.')
-    return redirect(url_for('grn_actions_controllers.edit_grn_view'))
+            record.remaining_quantity = record.demand_quantity - record.received_quantity
+            db.session.commit()
+            object = Items.query.filter_by(id=item.get('item_product_id')).first()
+            object.item_quantity = object.item_quantity + int(item.get('remaining_quantity'))
+            db.session.commit()
+        return jsonify(success="success")
 
 
 def redirect_object(id):
@@ -137,9 +127,21 @@ def redirect_object(id):
 def delete_grn():
     id = int(request.values.get('id'))
     if id:
-        # Grn.query.filter(Grn.id == id).delete()
-        db.session.query(Grn).filter(Grn.id == id).delete()
-        db.session.query(GrnLine).filter(GrnLine.id == id).delete()
+        db.session.query(GrnLine).filter(GrnLine.grn_id == id).delete()
         db.session.commit()
-
+        Grn.query.filter(Grn.id == id).delete()
+        db.session.commit()
         return redirect(url_for('grn_actions_controllers.view_grn', _anchor="content", ))
+
+
+@grn_actions_controllers.route('/complete_grn', methods=["GET", "POST"])
+@login_required
+def complete_grn():
+    if request.method == 'POST':
+        grn_id = request.form.get('grn_id')
+        vals = {
+            'grn_state': "Completed",
+        }
+        Grn.query.filter(Grn.id == grn_id).update(vals)
+        db.session.commit()
+        return jsonify(id=grn_id)

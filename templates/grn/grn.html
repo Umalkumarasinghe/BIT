@@ -1,8 +1,8 @@
 {% extends "base/base.html" %}
 {% block header %} Good Receive Notes
-        <div style="margin-top: 10px">
-            <button type="button" class="btn btn-primary" onclick="window.location.href='{{ url_for('grn_actions_controllers.create_grn_view') }}';">Create</button>
-        </div>
+<!--        <div style="margin-top: 10px">-->
+<!--            <button type="button" class="btn btn-primary" onclick="window.location.href='{{ url_for('grn_actions_controllers.create_grn_view') }}';">Create</button>-->
+<!--        </div>-->
 {% endblock %}
 
 {% block content %}
@@ -26,6 +26,7 @@
                         <thead>
                         <tr class="text-center">
 
+                            <th>#</th>
                             <th>Supplier Name</th>
                             <th>Order State</th>
                             <th>Created Date</th>
@@ -37,6 +38,7 @@
                         {% for object in objects %}
                             <tr class="text-center">
 
+                                <td width="15%">{{ object.grn_name }}</td>
                                 <td width="25%">{{ object.supplier.supplier_name }}</td>
                                 <td width="25%">{{ object.grn_state }}</td>
                                 <td>{{ object.grn_created_date }}</td>

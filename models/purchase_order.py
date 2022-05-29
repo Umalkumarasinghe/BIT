@@ -20,8 +20,7 @@ class PurchaseOrder(db.Model, UserMixin):
     purchase_order_line = db.relationship("PurchaseOrderLine", backref="purchase_order_line", lazy='dynamic')
     purchase_total = db.Column(db.Integer)
 
-    def __init__(self, supplier_id, purchase_order_name, purchase_order_created_date, purchase_order_expected_date, purchase_total, purchase_order_state=None):
-        self.purchase_order_name = purchase_order_name,
+    def __init__(self, supplier_id, purchase_order_created_date, purchase_order_expected_date, purchase_total, purchase_order_state=None):
         self.purchase_order_created_date = purchase_order_created_date
         self.purchase_order_expected_date = purchase_order_expected_date
         self.supplier_id = supplier_id

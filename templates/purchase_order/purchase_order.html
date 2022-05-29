@@ -32,6 +32,7 @@
                     <table id="example1" class="table table-bordered table-striped">
                         <thead>
                         <tr class="text-center">
+                            <th>#</th>
                             <th>Supplier Name</th>
                             <th>Order State</th>
                             <th>Created Date</th>
@@ -42,6 +43,7 @@
                         <tbody>
                         {% for object in objects %}
                             <tr class="text-center">
+                                <td width="15%">{{ object.purchase_order_name }}</td>
                                 <td width="25%">{{ object.supplier.supplier_name }}</td>
                                 <td width="25%">{{ object.purchase_order_state }}</td>
                                 <td>{{ object.purchase_order_created_date }}</td>
