@@ -1,5 +1,252 @@
 {% extends "base/base.html" %}
 {% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<div class="container">
+    <div class="row">
+<div class="col-xs-10 col-sm-6 col-md-6">
+<div class="card card-style mb-2">
+    <div class="card-body">
+        <div class="chart-container" style="position: relative;">
+            <canvas id="income_vs_expense"></canvas>
+        </div>
+    </div>
+</div>
+</div>
+
+
+
+<div class="col-xs-10 col-sm-6 col-md-6">
+<div class="card card-style mb-2">
+    <div class="card-body">
+        <div class="chart-container" style="position: relative;">
+            <canvas id="overtime_expenditure" max-width="100" max-height="100"></canvas>
+        </div>
+    </div>
+</div>
+</div>
+
+    <div class="col-xs-10 col-sm-6 col-md-6">
+<div class="card card-style mb-2">
+    <div class="card-body">
+        <div class="chart-container" style="position: relative;">
+            <canvas id="income_vs_category"></canvas>
+        </div>
+    </div>
+</div>
+</div>
+
+    <div class="col-xs-10 col-sm-6 col-md-6">
+<div class="card card-style mb-2">
+    <div class="card-body">
+        <div class="chart-container" style="position: relative;">
+            <canvas id="purchase_order_vs_status"></canvas>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+{% block javascript %}
+<script>
+    let income_vs_expense_data = JSON.parse({{ income_vs_expense | tojson }})
+    let income_category_data = JSON.parse({{ income_category | tojson}})
+    let purchase_order_status_data = JSON.parse({{ purchase_order_status | tojson }})
+
+    Chart.scaleService.updateScaleDefaults('linear', {
+            ticks: {
+                min: 0
+            }
+    });
+
+
+    let income_vs_expense_chart = new Chart(income_vs_expense, {
+            type: 'pie',
+            data: {
+            labels: ['expense', 'income'],
+                datasets: [{
+                    label: "Income Vs Expenses",
+                    data: income_vs_expense_data,
+                    backgroundColor: ['#5DA5DA ', '#FAA43A', '#60BD68',
+                        '#B276B2', '#E16851', '#FB8267'],
+
+                    borderWidth: 1,
+                    hoverBorderColor: "black",
+                    hoverBorderWidth: 2,
+                    hoverBackgroundColor: 'rgba(154, 245, 140)',
+                    pointHoverRadius: 5
+                }],
+            },
+            options: {
+                    title: {
+                        display: true,
+                            text: "Income Vs Expenses",
+                                fontSize: 20,
+                    },
+                    legend: {
+                        position: "right",
+                            labels: {
+                            fontColor: "gray"
+                        },
+                        display: true,
+                    },
+
+                    elements: {
+                        hitRadius: 3,
+                    }
+            }
+        })
+
+
+
+    let income_vs_category_chart = new Chart(income_vs_category, {
+            type: 'bar',
+            data: {
+                labels: ['investment', 'rent', 'sub', 'salary'],
+                datasets: [{
+                    label: "Categories Of Income",
+                    data: income_category_data,
+            backgroundColor: ['#5DA5DA ', '#FAA43A', '#60BD68',
+                '#B276B2', '#E16851', '#FB8267'],
+            borderWidth: 1,
+            hoverBorderColor: "black",
+            hoverBorderWidth: 2,
+            hoverBackgroundColor: 'rgba(154, 245, 140)',
+            pointHoverRadius: 5
+        }],
+            },
+        options: {
+                title: {
+                    display: true,
+                        text: "Income Categories",
+                            fontSize: 20,
+            },
+                legend: {
+                    position: "right",
+                        labels: {
+                        fontColor: "gray"
+                    },
+                    display: true,
+            },
+
+                elements: {
+                    hitRadius: 3,
+            }
+            }
+        })
+        over_time_expenditure = JSON.parse({{over_time_expenditure | tojson}})
+        labels = JSON.parse({{ dates_label  | tojson}})
+
+        new Chart(document.getElementById("overtime_expenditure"), {
+                type: "line",
+                data:
+                {
+                    labels: labels,
+                    datasets: [{
+                        label: "Expenditure Over Time",
+
+                        data: over_time_expenditure,
+                        fill: false,
+                        borderColor: "rgb(75, 192, 192)",
+                        lineTension: 0.1
+                    }]
+                },
+                options: {}
+            })
+            let purchase_order_status_chart = new Chart(purchase_order_vs_status, {
+            type: 'pie',
+            data: {
+            labels: ['confirmed', 'pending'],
+                datasets: [{
+                    label: "Confirmed Vs Pending",
+                    data: purchase_order_status_data,
+                    backgroundColor: ['#5DA5DA ', '#FAA43A', '#60BD68',
+                        '#B276B2', '#E16851', '#FB8267'],
+
+                    borderWidth: 1,
+                    hoverBorderColor: "black",
+                    hoverBorderWidth: 2,
+                    hoverBackgroundColor: 'rgba(154, 245, 140)',
+                    pointHoverRadius: 5
+                }],
+            },
+            options: {
+                    title: {
+                        display: true,
+                            text: "Confirmed Vs Pending",
+                                fontSize: 20,
+                    },
+                    legend: {
+                        position: "right",
+                            labels: {
+                            fontColor: "gray"
+                        },
+                        display: true,
+                    },
+
+                    elements: {
+                        hitRadius: 3,
+                    }
+            }
+        });
+</script>
+{% endblock%}
+
+
+
+<!--<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">-->
+<!--{#    custom css#}-->
+<!--    <link href="../../static/custom/css/custom_css_dashboard.css" rel="stylesheet">-->
+<!--<div class="container">-->
+<!--    <di>-->
+<!--        <h2 class="">Dashboard</h2>-->
+<!--    </di>-->
+<!--    <div class="row">-->
+<!--        <div class="col-md-4 col-xl-3">-->
+<!--            <div class="card bg-c-blue order-card">-->
+<!--                <div class="card-block">-->
+<!--                    <h6 class="m-b-20">Orders Received</h6>-->
+<!--                    <h2 class="text-right"><i class="fa fa-cart-plus f-left"></i><span>486</span></h2>-->
+<!--                    <p class="m-b-0">Completed Orders<span class="f-right">351</span></p>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="col-md-4 col-xl-3">-->
+<!--            <div class="card bg-c-green order-card">-->
+<!--                <div class="card-block">-->
+<!--                    <h6 class="m-b-20">Orders Received</h6>-->
+<!--                    <h2 class="text-right"><i class="fa fa-rocket f-left"></i><span>486</span></h2>-->
+<!--                    <p class="m-b-0">Completed Orders<span class="f-right">351</span></p>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="col-md-4 col-xl-3">-->
+<!--            <div class="card bg-c-yellow order-card">-->
+<!--                <div class="card-block">-->
+<!--                    <h6 class="m-b-20">Orders Received</h6>-->
+<!--                    <h2 class="text-right"><i class="fa fa-refresh f-left"></i><span>486</span></h2>-->
+<!--                    <p class="m-b-0">Completed Orders<span class="f-right">351</span></p>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="col-md-4 col-xl-3">-->
+<!--            <div class="card bg-c-pink order-card">-->
+<!--                <div class="card-block">-->
+<!--                    <h6 class="m-b-20">Orders Received</h6>-->
+<!--                    <h2 class="text-right"><i class="fa fa-credit-card f-left"></i><span>486</span></h2>-->
+<!--                    <p class="m-b-0">Completed Orders<span class="f-right">351</span></p>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--	</div>-->
+<!--</div>-->
+
 
 
 {% endblock %}

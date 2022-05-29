@@ -22,7 +22,6 @@ class User(db.Model, UserMixin):
     nic = db.Column(db.String(12), unique=True)
     contact_no = db.Column(db.String(20))
     address = db.Column(db.String(255))
-    user_group = db.Column(db.String(30))
 
     def get_reset_token(self, expires_sec=1800):
         serial = Serializer(app.SECRET_KEY, expires_sec)
@@ -37,7 +36,7 @@ class User(db.Model, UserMixin):
             return None
         return User.query.get(user_id)
 
-    def __init__(self, password, email, full_name, calling_name, last_login, last_logout, nic, contact_no, address, active=None, user_group=user_group):
+    def __init__(self, password, email, full_name, calling_name, last_login, last_logout, nic, contact_no, address, active=None):
         self.password = password or None,
         self.email = email,
         self.full_name = full_name
@@ -48,8 +47,6 @@ class User(db.Model, UserMixin):
         self.nic = nic
         self.contact_no = contact_no
         self.address = address
-        self.user_group = user_group
-
 
     def __repr__(self):
         return self.email

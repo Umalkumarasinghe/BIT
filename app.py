@@ -21,11 +21,12 @@ from models.suppliers import supplier_model_blueprint
 from models.items import item_model_blueprint
 from models.production_teams import production_team_model_blueprint
 from models.purchase_order import purchase_order_model_blueprint
-from models.production_order import production_order_model_blueprint
+from models.production import production_model_blueprint
+from models.production_line import production_line_model_blueprint
 from models.grn import grn_model_blueprint
 from models.grn_line import grn_line_model_blueprint
-from models.gin import gin_model_blueprint
-from models.gin_line import gin_line_model_blueprint
+from models.incomes_and_expenses import incomes_and_expenses_model_blueprint
+from models.reordering import reordering_model_blueprint
 
 
 from controllers.user_actions_controllers import user_actions_controller
@@ -35,8 +36,8 @@ from controllers.production_team_actions_controllers import production_team_acti
 from controllers.item_actions_controllers import item_actions_controller
 from controllers.purchase_order_actions_controllers import purchase_order_actions_controllers
 from controllers.grn_actions_controllers import grn_actions_controllers
-from controllers.gin_actions_controllers import gin_actions_controllers
-from controllers.production_order_actions_controllers import production_order_actions_controllers
+from controllers.production_actions_controllers import production_actions_controllers
+from controllers.incomes_and_expenses_actions_controllers import incomes_and_expenses_actions_controller
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -59,14 +60,13 @@ app.register_blueprint(member_model_blueprint)
 app.register_blueprint(supplier_model_blueprint)
 app.register_blueprint(production_team_model_blueprint)
 app.register_blueprint(item_model_blueprint)
+app.register_blueprint(production_model_blueprint)
 app.register_blueprint(purchase_order_model_blueprint)
-app.register_blueprint(production_order_model_blueprint)
 app.register_blueprint(production_team_model_blueprint)
 app.register_blueprint(grn_model_blueprint)
 app.register_blueprint(grn_line_model_blueprint)
-app.register_blueprint(gin_line_model_blueprint)
-app.register_blueprint(gin_model_blueprint)
-app.register_blueprint(gin_model_blueprint)
+app.register_blueprint(incomes_and_expenses_model_blueprint)
+app.register_blueprint(reordering_model_blueprint)
 app.secret_key = SECRET_KEY
 
 # controllers
@@ -76,9 +76,9 @@ app.register_blueprint(supplier_actions_controller)
 app.register_blueprint(production_team_actions_controller)
 app.register_blueprint(item_actions_controller)
 app.register_blueprint(purchase_order_actions_controllers)
-app.register_blueprint(production_order_actions_controllers)
+app.register_blueprint(production_actions_controllers)
 app.register_blueprint(grn_actions_controllers)
-app.register_blueprint(gin_actions_controllers)
+app.register_blueprint(incomes_and_expenses_actions_controller)
 
 if __name__ == '__main__':
     app.run(debug=True)

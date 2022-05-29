@@ -1,5 +1,5 @@
 # importing libraries and files
-from flask import Flask, render_template, Blueprint, request, flash, redirect, url_for
+from flask import Flask, render_template, Blueprint, request, flash, redirect, url_for, send_file
 from models.items import Items
 from models.users import User
 from flask_login import login_required, current_user
@@ -8,6 +8,7 @@ from sqlalchemy import or_
 from forms.item_form import CreateItemForm
 import json
 from datetime import datetime
+import xlsxwriter
 
 item_actions_controller = Blueprint('item_actions_controller', __name__)
 
@@ -100,9 +101,65 @@ def edit_item():
 @item_actions_controller.route('/delete_item', methods=["GET", "POST"])
 @login_required
 def delete_item():
-
     id = int(request.values.get('id'))
     if id:
         Items.query.filter(Items.id==id).delete()
         db.session.commit()
         return redirect(url_for('item_actions_controller.view_items', _anchor="content", ))
+
+
+# edit member when form is submitted
+@item_actions_controller.route('/inventory_report', methods=["GET", "POST"])
+@login_required
+def inventory_report():
+    report = 'Inventory Report' + '.xlsx'
+    workbook = xlsxwriter.Workbook(report)
+
+    # Create worksheet 1
+    worksheet = workbook.add_worksheet('Inventory Report')
+    worksheet.set_landscape()
+
+    heading = workbook.add_format({'bold': True, 'align': 'center', 'font_size': '14'})
+    heading_2 = workbook.add_format({'bold': True, 'align': 'left', 'font_size': '12'})
+    font_right = workbook.add_format(
+        {'align': 'right', 'valign': 'vcenter', 'font_size': 10, 'num_format': '#,##0.00', 'border': 1})
+    font_left = workbook.add_format(
+        {'align': 'left', 'valign': 'vcenter', 'font_size': 10, 'num_format': '#,##0.00', 'border': 1})
+    font_center = workbook.add_format({'align': 'center', 'valign': 'vcenter', 'font_size': 10, 'border': 1})
+    font_center_bold = workbook.add_format(
+        {'align': 'center', 'valign': 'vcenter', 'font_size': 10, 'bold': True, 'border': 1})
+    font_right_bold = workbook.add_format(
+        {'align': 'right', 'valign': 'vcenter', 'font_size': 10, 'num_format': '#,##0.00', 'bold': True})
+    font_left_bold = workbook.add_format(
+        {'align': 'left', 'valign': 'vcenter', 'font_size': 10, 'num_format': '#,##0.00', 'bold': True})
+
+    worksheet.set_column('A:S', 20)
+    worksheet.set_row(0, 20)
+
+    row = 0
+    col = 0
+
+    # Write data on the worksheet
+    worksheet.write(row, col, " ", heading)
+    worksheet.merge_range(row, col, row, col + 4, "Inventory Report", heading)
+
+    col = 0
+    row = 3
+
+    worksheet.write(row, col, "Product", font_center_bold)
+    worksheet.write(row, col + 1, "Code", font_center_bold)
+    worksheet.write(row, col + 2, "Quantity", font_center_bold)
+    worksheet.write(row, col + 3, "Unit Price", font_center_bold)
+
+    row += 1
+
+    for item in Items.query.filter_by().all():
+        worksheet.write(row, col, item.item_name, font_left)
+        worksheet.write(row, col + 1, item.item_code, font_left)
+        worksheet.write(row, col + 2, item.item_quantity, font_left)
+        worksheet.write(row, col + 3, item.item_unit_price, font_left)
+        row += 1
+
+    row += 1
+    workbook.close()
+    return send_file(report, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')

@@ -1,7 +1,7 @@
 {% extends "base/base.html" %}
-{% block header %} Productions
+{% block header %} Production Order
         <div style="margin-top: 10px">
-            <button type="button" class="btn btn-primary" onclick="window.location.href='{{ url_for('production_order_actions_controllers.create_production_order_view') }}';">Create</button>
+            <button type="button" class="btn btn-primary" onclick="window.location.href='{{ url_for('production_actions_controllers.create_production_view') }}';">Create</button>
         </div>
 {% endblock %}
 
@@ -26,7 +26,8 @@
                         <thead>
                         <tr class="text-center">
 
-                            <th>Production</th>
+                            <th>#</th>
+                            <th>Team</th>
                             <th>Order State</th>
                             <th>Created Date</th>
                             <th>Expected Date</th>
@@ -37,14 +38,15 @@
                         {% for object in objects %}
                             <tr class="text-center">
 
-                                <td width="25%">{{ object.production_team.production_team_name }}</td>
-                                <td width="25%">{{ object.production_order_state }}</td>
-                                <td>{{ object.production_order_created_date }}</td>
-                                <td>{{ object.production_order_expected_date }}</td>
+                                <td width="15%">{{ object.production_name }}</td>
+                                <td width="25%">{{ object.team.production_team_name }}</td>
+                                <td width="25%">{{ object.production_state }}</td>
+                                <td>{{ object.production_created_date }}</td>
+                                <td>{{ object.production_expected_date }}</td>
                                 <td width="11%">
-                                    {#                                    <button type="button" class="btn-sm btn btn-info" onclick="window.location.href='{{ url_for('production_order_actions_controller.view_production_order_view', id=user.id) }}';"><span class="fa fa-eye"></span></button>#}
-                                    <button type="button" class="btn-sm btn btn-secondary" onclick="window.location.href='{{ url_for('production_order_actions_controllers.edit_production_order_view', id=object.id) }}';"><span class="fa fa-edit"></span></button>
-                                    <button type="button" class="btn-sm btn btn-danger" onclick="window.location.href='{{ url_for('production_order_actions_controllers.delete_production_order', id=object.id) }}';"><span class="fa fa-trash"></span></button>
+                                    {#                                    <button type="button" class="btn-sm btn btn-info" onclick="window.location.href='{{ url_for('production_actions_controller.view_production_view', id=user.id) }}';"><span class="fa fa-eye"></span></button>#}
+                                    <button type="button" class="btn-sm btn btn-secondary" onclick="window.location.href='{{ url_for('production_actions_controllers.edit_production_view', id=object.id) }}';"><span class="fa fa-edit"></span></button>
+                                    <button type="button" class="btn-sm btn btn-danger" onclick="window.location.href='{{ url_for('production_actions_controllers.delete_production', id=object.id) }}';"><span class="fa fa-trash"></span></button>
                                 </td>
                             </tr>
                         {% endfor %}

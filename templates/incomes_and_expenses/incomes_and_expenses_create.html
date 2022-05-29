@@ -1,0 +1,78 @@
+{% extends "base/base.html" %}
+{% block header %}
+{% if type in ['view', 'edit'] %}
+<!--{{ incomes_and_expenses.incomes_and_expenses_name }}-->
+{% else %}
+Create Incomes or Expenses
+{% endif %}
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div style="margin-top: 20px" class="container-login100-form-btn alert alert-danger">
+                    {% for message in messages %}
+                    {{ message }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+            </div>
+            <form role="form" method="POST" action="{{ url_for('incomes_and_expenses_actions_controller.create_incomes_and_expenses') if type == 'create' else url_for('incomes_and_expenses_actions_controller.edit_incomes_and_expenses')}}">
+                <div class="card-body">
+                    {% if type in ['view', 'edit'] %}
+                    {{ form.id(hidden=True, value=incomes_and_expenses.id) }}
+                    {% endif %}
+                    <table width="100%">
+                        <div style="font-size: 20px; margin-bottom: 10px;" class="text-primary"><b>Enter Records</b></div>
+                        <tr>
+                            <td colspan="3">
+                                <div class="form-group">
+                                    {{ form.date.label }}
+                                    {{ form.date(placeholder="incomes_and_expenses Name", class="form-control form-control-lg", maxlength=200, readonly=True if type=='view' else False, value=incomes_and_expenses.date if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.type.label }}
+                                    {{ form.type(placeholder="E-Mail Address", class="form-control", maxlength=250, readonly=True if type=='view' else False, value=incomes_and_expenses.type if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                            <td width="6%"></td>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.category.label }}
+                                    {{ form.category(placeholder="Contact Number", class="form-control", maxlength=50, readonly=True if type=='view' else False, value=incomes_and_expenses.category if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">
+                                <div class="form-group">
+                                    {{ form.amount.label }}
+                                    {{ form.amount(placeholder="Amount", class="form-control form-control-lg", maxlength=200, readonly=True if type=='view' else False, value=incomes_and_expenses.amount if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                {% if type=='edit' %}
+                <div style="padding: 20px;">
+                    <input type="submit" value="Update" class="btn btn-primary">
+                </div>
+                {% endif %}
+                {% if type=='create' %}
+                <div style="padding: 20px;">
+                    <input type="submit" value="Create" class="btn btn-primary">
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

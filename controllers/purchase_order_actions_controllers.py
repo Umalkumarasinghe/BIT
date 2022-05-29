@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Blueprint, request, flash, redirect, url_for, jsonify
+from flask import Flask, render_template, Blueprint, request, flash, redirect, url_for, jsonify, send_from_directory
 from models.purchase_order import PurchaseOrder
 from models.purchase_order_line import PurchaseOrderLine
 from models.suppliers import Supplier
@@ -13,6 +13,8 @@ from forms.purchase_order_forms import PurchaseOrderForm
 import json
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+from fpdf import FPDF
+
 
 purchase_order_actions_controllers = Blueprint('purchase_order_actions_controllers', __name__)
 
@@ -196,3 +198,129 @@ def delete_purchase_order():
         PurchaseOrder.query.filter(PurchaseOrder.id == id).delete()
         db.session.commit()
         return redirect(url_for('purchase_order_actions_controllers.view_purchase_order'))
+
+
+@purchase_order_actions_controllers.route('/download_pdf', methods=["GET", "POST"])
+@login_required
+def download_pdf():
+    id = int(request.values.get('id'))
+    po = PurchaseOrder.query.filter_by(id=id).first()
+    # items_day_1 = ScheduleWorksheet.query.filter_by(schedule_id=id, day='day1').order_by('sequence').all()
+    # items_day_2 = ScheduleWorksheet.query.filter_by(schedule_id=id, day='day2').order_by('sequence').all()
+    # items_day_3 = ScheduleWorksheet.query.filter_by(schedule_id=id, day='day3').order_by('sequence').all()
+    # items_day_4 = ScheduleWorksheet.query.filter_by(schedule_id=id, day='day4').order_by('sequence').all()
+    # items_day_5 = ScheduleWorksheet.query.filter_by(schedule_id=id, day='day5').order_by('sequence').all()
+    # items_day_6 = ScheduleWorksheet.query.filter_by(schedule_id=id, day='day6').order_by('sequence').all()
+    # items_day_7 = ScheduleWorksheet.query.filter_by(schedule_id=id, day='day7').order_by('sequence').all()
+    pdf = FPDF(format='letter', unit='in')
+    # Add new page. Without this you cannot create the document.
+    pdf.add_page()
+    # Remember to always put one of these at least once.
+    pdf.set_font('Times', '', 10.0)
+    # Effective page width, or just epw
+    epw = pdf.w - 2 * pdf.l_margin
+    # Set column width to 1/4 of effective page width to distribute content
+    # evenly across table and page
+    first_line = [["# - " + str(po.purchase_order_name), "Supplier - " + str(po.supplier.supplier_name)]]
+    second_line = [["Created Date - " + str(po.purchase_order_created_date), "Expected Date - " + str(po.purchase_order_created_date)]]
+    col_width = epw / 2
+    pdf.set_font('Times', 'B', 14.0)
+    pdf.cell(epw, 0.0, 'Purchase Order', align='C')
+    pdf.set_font('Times', '', 10.0)
+    pdf.ln(0.5)
+
+    th = pdf.font_size * 2
+
+    for row in first_line:
+        for column in row:
+            pdf.set_font('Times', 'B', 12.0)
+            pdf.cell(col_width, th, str(column), border=1, align='C')
+        pdf.ln(th)
+
+    for row in second_line:
+        for column in row:
+            pdf.set_font('Times', 'B', 12.0)
+            pdf.cell(col_width, th, str(column), border=1, align='C')
+        pdf.ln(th)
+
+    pdf.ln(0.5)
+
+    col_width = epw / 4
+    # Since we do not need to draw lines anymore, there is no need to separate
+    # headers from data matrix.
+    heading = [['Item', 'Quantity', 'Unit Price', 'Total Price']]
+    data = []
+    for line in po.purchase_order_line:
+        data.append([line.item.item_name, line.quantity, line.unit_price, line.subtotal])
+    # for line in items_day_2:
+    #     data_2.append([line.sequence, line.day, line.workout.name, line.equipment.name, line.note, line.number_of_sets, line.number_of_reps])
+    # for line in items_day_3:
+    #     data_3.append([line.sequence, line.day, line.workout.name, line.equipment.name, line.note, line.number_of_sets, line.number_of_reps])
+    # for line in items_day_4:
+    #     data_4.append([line.sequence, line.day, line.workout.name, line.equipment.name, line.note, line.number_of_sets, line.number_of_reps])
+    # for line in items_day_5:
+    #     data_5.append([line.sequence, line.day, line.workout.name, line.equipment.name, line.note, line.number_of_sets, line.number_of_reps])
+    # for line in items_day_6:
+    #     data_6.append([line.sequence, line.day, line.workout.name, line.equipment.name, line.note, line.number_of_sets, line.number_of_reps])
+    # for line in items_day_7:
+    #     data_7.append([line.sequence, line.day, line.workout.name, line.equipment.name, line.note, line.number_of_sets, line.number_of_reps])
+
+    # Document title centered, 'B'old, 14 pt
+    pdf.set_font('Times', 'B', 14.0)
+    pdf.cell(epw, 0.0, 'Items', align='C')
+    pdf.set_font('Times', '', 10.0)
+    pdf.ln(0.1)
+
+    # Text height is the same as current font size
+    th = pdf.font_size * 2
+
+    for row in heading:
+        for column in row:
+            pdf.set_font('Times', 'B', 12.0)
+            pdf.cell(col_width, th, str(column), border=1, align='C')
+        pdf.ln(th)
+    #
+    for row in data:
+        for column in row:
+            pdf.set_font('Times', '', 10.0)
+            pdf.cell(col_width, th, str(column), border=1)
+        pdf.ln(th)
+    #
+    # for row in data_2:
+    #     for column in row:
+    #         pdf.set_font('Times', '', 10.0)
+    #         pdf.cell(col_width, th, str(column), border=1)
+    #     pdf.ln(th)
+    #
+    # for row in data_3:
+    #     for column in row:
+    #         pdf.set_font('Times', '', 10.0)
+    #         pdf.cell(col_width, th, str(column), border=1)
+    #     pdf.ln(th)
+    #
+    # for row in data_4:
+    #     for column in row:
+    #         pdf.set_font('Times', '', 10.0)
+    #         pdf.cell(col_width, th, str(column), border=1)
+    #     pdf.ln(th)
+    #
+    # for row in data_5:
+    #     for column in row:
+    #         pdf.set_font('Times', '', 10.0)
+    #         pdf.cell(col_width, th, str(column), border=1)
+    #     pdf.ln(th)
+    #
+    # for row in data_6:
+    #     for column in row:
+    #         pdf.set_font('Times', '', 10.0)
+    #         pdf.cell(col_width, th, str(column), border=1)
+    #     pdf.ln(th)
+    #
+    # for row in data_7:
+    #     for column in row:
+    #         pdf.set_font('Times', '', 10.0)
+    #         pdf.cell(col_width, th, str(column), border=1)
+    #     pdf.ln(th)
+
+    pdf.output('schedule.pdf', 'F')
+    return send_from_directory(directory='./', filename='schedule.pdf')

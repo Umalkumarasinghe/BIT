@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>AdminLTE 3 | Blank Page</title>
+    <title>Tharaka Garment</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- DataTables -->
@@ -26,12 +26,26 @@
     <nav class="main-header navbar navbar-expand navbar-white navbar-light">
         <!-- Right navbar links -->
         <ul class="navbar-nav ml-auto">
+
+            <div>
+
+                <li class="nav-item dropdown">
+                    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                        <div class="image">
+                            <img src="/static/images/user_icon.png" class="img-circle elevation-2" alt="User Image">
+                        </div>
+                        <div class="info">
+                            <a href="#" class="d-block">{{ current_user.email }} <button type="button" class="btn btn-danger" data-toggle="dropdown" onclick="window.location.href='{{ url_for('user_actions_controller.logout') }}';">
+                                <span>Log Out</span>
+                            </button></a>
+                            <a></a>
+                        </div>
+                    </div>
+                </li>
+
+            </div>
             <!-- Messages Dropdown Menu -->
-            <li class="nav-item dropdown">
-                <button type="button" class="btn btn-danger" data-toggle="dropdown" onclick="window.location.href='{{ url_for('user_actions_controller.logout') }}';">
-                    <span>Log Out</span>
-                </button>
-            </li>
+
             <!-- Notifications Dropdown Menu -->
             <li class="nav-item dropdown">
             </li>
@@ -44,25 +58,22 @@
     <!-- Main Sidebar Container -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <!-- Brand Logo -->
-        <a onclick="window.location.href='{{ url_for('user_actions_controller.login') }}';" class="brand-link">
-            <img src="/static/images/download.jpg"
-                 alt="Company Logo"
-                 class="brand-image img-circle elevation-3"
-                 style="opacity: .8">
-            <span class="brand-text font-weight-light">Tharaka Garments</span>
-        </a>
+        <div>
+            <a onclick="window.location.href='{{ url_for('user_actions_controller.login') }}';" class="brand-link">
+                <img src="/static/images/download.jpg"
+                     alt="Company Logo"
+                     class="brand-image img-circle elevation-5"
+                     style="opacity: .9">
+                <span class="brand-text font-weight-dark">Tharaka Garments</span>
+            </a>
+
+        </div>
+
 
         <!-- Sidebar -->
         <div class="sidebar">
             <!-- Sidebar user (optional) -->
-            <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-                <div class="image">
-                    <img src="/static/images/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
-                </div>
-                <div class="info">
-                    <a href="#" class="d-block">{{ current_user.email }}</a>
-                </div>
-            </div>
+
 
             <!-- Sidebar Menu -->
             <nav class="mt-2">
@@ -71,28 +82,12 @@
                          with font-awesome or any other icon font library -->
                     <li class="nav-item has-treeview">
 
-                        <a href="#" class="nav-link">
-                            <i class="nav-icon fas fa-list"></i>
-                            <p>
-                                Suppliers
-                                <i class="right fas fa-angle-left"></i>
-                            </p>
-                        </a>
+
                         <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a onclick="window.location.href='{{ url_for('supplier_actions_controller.view_suppliers') }}';" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Suppliers</p>
-                                </a>
-                            </li>
+
                         </ul>
                         <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a onclick="window.location.href='{{ url_for('item_actions_controller.view_items') }}';" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Items</p>
-                                </a>
-                            </li>
+
                         </ul>
                     </li>
 
@@ -100,78 +95,103 @@
 
                     <li class="nav-item has-treeview">
 
+
+
+                        <ul class="nav nav-treeview">
+
+                        </ul>
+                    </li>
+                    <li class="nav-item has-treeview">
+                        <!--                        <a href="#" class="nav-link">-->
+                        <!--                            <i class="nav-icon fas fa-cog"></i>-->
+                        <!--                            <p>-->
+                        <!--                                Settings-->
+                        <!--                                <i class="right fas fa-angle-left"></i>-->
+                        <!--                            </p>-->
+                        <!--                        </a>-->
+                    <li class="nav-item">
+                        <a onclick="window.location.href='{{ url_for('supplier_actions_controller.view_suppliers') }}';" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Suppliers</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a onclick="window.location.href='{{ url_for('item_actions_controller.view_items') }}';" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Items</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a onclick="window.location.href='{{ url_for('member_actions_controller.view_members') }}';" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Members</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a onclick="window.location.href='{{ url_for('production_team_actions_controller.view_production_teams') }}';" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Production Team</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a onclick="window.location.href='{{ url_for('user_actions_controller.view_users') }}';" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Users</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a onclick="window.location.href='{{ url_for('purchase_order_actions_controllers.view_purchase_order') }}';" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Purchase Orders</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a onclick="window.location.href='{{ url_for('production_actions_controllers.view_production') }}';" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Production Orders</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a onclick="window.location.href='{{ url_for('grn_actions_controllers.view_grn') }}';" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Goods Receive Note</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a onclick="window.location.href='{{ url_for('incomes_and_expenses_actions_controller.view_incomes_and_expenses') }}';" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Incomes And Expenses</p>
+                        </a>
+                    </li>
+                    <li class="nav-item has-treeview">
                         <a href="#" class="nav-link">
-                            <i class="nav-icon fas fa-list"></i>
-                            <p>
-                                Members
-                                <i class="right fas fa-angle-left"></i>
-                            </p>
+                            <i class="nav-icon fas fa-file"></i>
+                            <p>Reporting<i class="right fas fa-angle-left"></i></p>
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
-                                <a onclick="window.location.href='{{ url_for('member_actions_controller.view_members') }}';" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Members</p>
+                                <a href="{{ url_for('incomes_and_expenses_actions_controller.download_report_view') }}" class="nav-link">
+                                    <i class="fas fa-tag nav-icon"></i>
+                                    <p>Incomes and Expenses reports</p>
                                 </a>
                             </li>
-                        </ul>
-                        <ul class="nav nav-treeview">
                             <li class="nav-item">
-                                <a onclick="window.location.href='{{ url_for('production_team_actions_controller.view_production_teams') }}';" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Production Team</p>
+                                <a href="{{ url_for('item_actions_controller.inventory_report') }}" class="nav-link" download>
+                                    <i class="fas fa-tag nav-icon"></i>
+                                    <p>Inventory Report</p>
                                 </a>
                             </li>
                         </ul>
                     </li>
-                    <li class="nav-item has-treeview">
-                        <a href="#" class="nav-link">
-                            <i class="nav-icon fas fa-cog"></i>
-                            <p>
-                                Settings
-                                <i class="right fas fa-angle-left"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-
-                            <li class="nav-item">
-                                <a onclick="window.location.href='{{ url_for('user_actions_controller.view_users') }}';" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Users</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a onclick="window.location.href='{{ url_for('purchase_order_actions_controllers.view_purchase_order') }}';" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Purchase Orders</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a onclick="window.location.href='{{ url_for('grn_actions_controllers.view_grn') }}';" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Goods Receive Note</p>
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a onclick="window.location.href='{{ url_for('production_order_actions_controllers.view_production_order') }}';" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Production</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a onclick="window.location.href='{{ url_for('gin_actions_controllers.view_gin') }}';" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Good Issue Note</p>
-                                </a>
-                            </li>
 
 
 
 
 
 
-                        </ul>
+
                     </li>
                 </ul>
             </nav>
@@ -205,13 +225,13 @@
     </div>
     <!-- /.content-wrapper -->
 
-<!--    <footer class="main-footer">-->
-<!--        <div class="float-right d-none d-sm-block">-->
-<!--            <b>Version</b> 3.0.1-->
-<!--        </div>-->
-<!--        <strong>Copyright &copy; 2014-2019 <a href="http://adminlte.io">AdminLTE.io</a>.</strong> All rights-->
-<!--        reserved.-->
-<!--    </footer>-->
+    <!--    <footer class="main-footer">-->
+    <!--        <div class="float-right d-none d-sm-block">-->
+    <!--            <b>Version</b> 3.0.1-->
+    <!--        </div>-->
+    <!--        <strong>Copyright &copy; 2014-2019 <a href="http://adminlte.io">AdminLTE.io</a>.</strong> All rights-->
+    <!--        reserved.-->
+    <!--    </footer>-->
 
     <!-- Control Sidebar -->
     <aside class="control-sidebar control-sidebar-dark">
@@ -236,10 +256,10 @@
 
 {#custom js#}
 <script src="../../static/custom/js/nic.js"></script>
-<!--<script src="../../static/custom/js/bmi.js"></script>-->
+
 <script src="../../static/custom/js/ajax.js"></script>
 <script src="../../static/custom/js/deleteJs.js"></script>
-<!--<script src="../../static/custom/js/purchase.js"></script>-->
+<!--<script src="../../static/custom/js/schedule.js"></script>-->
 
 <script>
     $(function () {

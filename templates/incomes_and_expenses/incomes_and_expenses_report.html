@@ -1,0 +1,61 @@
+{% extends "base/base.html" %}
+{% block header %}
+{% if type in ['view', 'edit'] %}
+<!--{{ incomes_and_expenses.incomes_and_expenses_name }}-->
+{% else %}
+Create Incomes or Expenses
+{% endif %}
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div style="margin-top: 20px" class="container-login100-form-btn alert alert-danger">
+                    {% for message in messages %}
+                    {{ message }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+            </div>
+            <form role="form" method="POST" action="{{ url_for('incomes_and_expenses_actions_controller.download_report_view') if type == 'create' else url_for('incomes_and_expenses_actions_controller.download_report_view')}}">
+                <div class="card-body">
+
+                    <table width="100%">
+                        <div style="font-size: 20px; margin-bottom: 10px;" class="text-primary"><b>Enter Records</b></div>
+                        <tr>
+                            <td colspan="3">
+                                <div class="form-group">
+                                    {{ form.begin_date.label }}
+                                    {{ form.begin_date(placeholder="incomes_and_expenses Name", class="form-control form-control-lg", maxlength=200, readonly=True if type=='view' else False, value=incomes_and_expenses.begin_date if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                            <td colspan="3">
+                                <div class="form-group">
+                                    {{ form.end_date.label }}
+                                    {{ form.end_date(placeholder="incomes_and_expenses Name", class="form-control form-control-lg", maxlength=200, readonly=True if type=='view' else False, value=incomes_and_expenses.end_date if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+                {% if type=='edit' %}
+                <div style="padding: 20px;">
+                    <input type="submit" value="Update" class="btn btn-primary">
+                </div>
+                {% endif %}
+                {% if type=='create' %}
+                <div style="padding: 20px;">
+                    <input type="submit" value="Generate" class="btn btn-primary">
+                    <a ></a>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

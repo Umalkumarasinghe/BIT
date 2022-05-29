@@ -6,12 +6,12 @@ from wtforms.fields.html5 import DateField
 from datetime import datetime
 
 
-class GinForm(Form):
+class ProductionForm(Form):
 
-    production_team_id = SelectField('production_team', choices=[])
+    team_id = SelectField('Team', choices=[])
     item_product_id = SelectField('Items', choices=[])
-    gin_name = StringField('Name', validators=[DataRequired(), Length(max=200)])
-    gin_created_date = DateField(format="%Y-%m-%d", default=datetime.today())
-    gin_expected_date = DateField(format="%Y-%m-%d")
-    gin_state = SelectField(choices=['Confirmed', 'Pending'])
+    production_name = StringField('Name', validators=[DataRequired(), Length(max=200)])
+    production_created_date = DateField('Production Date', format="%Y-%m-%d", default=datetime.today())
+    production_expected_date = DateField(format="%Y-%m-%d")
+    production_state = SelectField(choices=['Confirmed', 'Pending'])
     id = IntegerField('Id')

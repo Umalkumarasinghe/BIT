@@ -36,23 +36,31 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr>
 
-                            <td width="6%"></td>
+                            <td colspan="3">
+                                <div class="form-group">
+                                    {{ form.address.label }}
+                                    {{ form.address(placeholder="Address", class="form-control", maxlength=250, readonly=True if type=='view' else False, value=user.address if type in ['view', 'edit'] else False)}}
+                                </div>
+                            </td>
+                        <tr>
                             <td width="47%">
                                 <div class="form-group">
                                     {{ form.calling_name.label }}
                                     {{ form.calling_name(placeholder="Address", class="form-control", maxlength=50, readonly=True if type=='view' else False, value=user.calling_name if type in ['view', 'edit'] else False)}}
                                 </div>
                             </td>
-                            <td width="47%">
-                                <div class="form-group">
-                                    {{ form.address.label }}
-                                    {{ form.address(placeholder="Address", class="form-control", maxlength=250, readonly=True if type=='view' else False, value=user.address if type in ['view', 'edit'] else False)}}
-                                </div>
-                            </td>
+
+
                         </tr>
                         <tr>
+                            <td width="47%">
+                                <div class="form-group">
+                                    {{ form.nic.label }}
+                                    {{ form.nic(placeholder="NIC Number", class="form-control", onchange="OnchangeNic(this.value)", maxlength=12, readonly=True if type=='view' else False, value=user.nic if type in ['view', 'edit'] else False)}}
+                                </div>
+
+                            </td>
                             <td width="47%">
                                 <div class="form-group">
                                     {{ form.email.label }}
@@ -61,10 +69,7 @@
                             </td>
                             <td width="6%"></td>
                             <td width="47%">
-                                <div class="form-group">
-                                    {{ form.nic_no.label }}
-                                    {{ form.nic_no(placeholder="NIC Number", class="form-control", onchange="OnchangeNic(this.value)", maxlength=12, readonly=True if type=='view' else False, value=user.nic if type in ['view', 'edit'] else False)}}
-                                </div>
+
                             </td>
                         </tr>
                             <tr>
@@ -75,35 +80,29 @@
                                 </div>
                             </td>
                         </tr>
-
                         <tr>
-                            <td width="6%"></td>
-                            <td width="47%">
+                            <td width="6%">
                                 <div class="form-group">
                                     {{ form.contact_no.label }}
                                     {{ form.contact_no(placeholder="Contact Number", class="form-control", maxlength=20, readonly=True if type=='view' else False, value=user.contact_no if type in ['view', 'edit'] else False)}}
                                 </div>
                             </td>
-                        </tr>
-                        <tr><td colspan="3"><div style="font-size: 20px; margin-bottom: 10px; margin-top: 10px" class="text-primary"><b>Emergency Contact Information</b></div></td></tr>
-                        <tr>
                             <td width="47%">
-                                <div class="form-group">
-                                    <select name="access_group" class="custom-select">
-                                        <option selected>Select Course</option>
-                                        <option value="{{ Director }}">Director</option>
-                                        <option value="{{ Manager }}">Manager</option>
-                                        <option value="{{ DataEntryOparator }}">DataEntryOparator</option>
-                                    </select>
-                                </div>
-                            </td>
-                        </tr>
 
-                    </table>
+                            </td>
+
+                        </table>
                     </div>
-                    <div>
-                        <input type="submit" value="Submit" class="btn btn-primary">
-                    </div>
+                    {% if type=='edit' %}
+                <div style="padding: 20px;">
+                    <input type="submit" value="Update" class="btn btn-primary">
+                </div>
+                {% endif %}
+                {% if type=='create' %}
+                <div style="padding: 20px;">
+                    <input type="submit" value="Create" class="btn btn-primary">
+                </div>
+                {% endif %}
                 </form>
             </div>
         </div>

@@ -17,15 +17,17 @@ class PurchaseOrder(db.Model, UserMixin):
     purchase_order_state = db.Column(db.String(120), default='Pending')
     supplier = db.relationship("Supplier")
     item = db.relationship("Items")
+    reorder = db.Column(db.Boolean)
     purchase_order_line = db.relationship("PurchaseOrderLine", backref="purchase_order_line", lazy='dynamic')
     purchase_total = db.Column(db.Integer)
 
-    def __init__(self, supplier_id, purchase_order_created_date, purchase_order_expected_date, purchase_total, purchase_order_state=None):
+    def __init__(self, supplier_id, purchase_order_created_date, purchase_order_expected_date, purchase_total, purchase_order_state=None, reorder=False):
         self.purchase_order_created_date = purchase_order_created_date
         self.purchase_order_expected_date = purchase_order_expected_date
         self.supplier_id = supplier_id
         self.purchase_order_state = purchase_order_state
         self.purchase_total = purchase_total
+        self.reorder = reorder
 
     def __repr__(self):
         return self.purchase_order_name

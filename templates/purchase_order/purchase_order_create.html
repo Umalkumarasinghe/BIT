@@ -63,7 +63,7 @@ Create Purchase Order
                             {% endif %}
                         </nav>
                         {% endif %}
-                        <div style="font-size: 20px; margin-bottom: 10px;" class="text-primary"><b>Basic Information</b></div>
+                        <div style="font-size: 20px; margin-bottom: 10px;" class="text-primary"><b>Basic Information</b><a class="btn-sm btn btn-info" style="float: right;" href="{{ url_for('purchase_order_actions_controllers.download_pdf', id=object.id) }}" download>Print</a></div>
                         <tr>
                             <td width="47%">
                                 <div class="form-group">

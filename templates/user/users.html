@@ -2,7 +2,7 @@
 
 {% block header %} Users
         <div style="margin-top: 10px">
-            <button type="button" class="btn btn-primary" onclick="window.location.href='{{ url_for('user_actions_controller.create_user') }}';">Create</button>
+            <button type="button" class="btn btn-primary" onclick="window.location.href='{{ url_for('user_actions_controller.create_users_view') }}';">Create</button>
         </div>
 {% endblock %}
 
@@ -34,7 +34,6 @@
                             <th>NIC</th>
                             <th>Contact Number</th>
                             <th>Address</th>
-                            <th>User Group</th>
                             <th>Active</th>
                             <th>Actions</th>
 
@@ -51,12 +50,11 @@
                                 <td>{{ user.nic }}</td>
                                 <td>{{ user.contact_no }}</td>
                                 <td>{{ user.address }}</td>
-                                <td>{{ user.user_group }}</td>
                                 <td>{{ user.active }}</td>
                                 <td width="11%">
 {#                                    <button type="button" class="btn-sm btn btn-info" onclick="window.location.href='{{ url_for('user_actions_controller.view_user_view', id=user.id) }}';"><span class="fa fa-eye"></span></button>#}
                                     <button type="button" class="btn-sm btn btn-secondary" onclick="window.location.href='{{ url_for('user_actions_controller.edit_user_view', id=user.id) }}';"><span class="fa fa-edit"></span></button>
-{#                                    <button type="button" class="btn-sm btn btn-danger" onclick="deleteUser({{ user.id }})"><span class="fa fa-trash"></span></button>#}
+{#                                    <button type="button" class="btn-sm btn btn-danger" onclick="window.location.href='{{ url_for('user_actions_controller.delete_user', id=user.id) }}';"><span class="fa fa-trash"></span></button>#}
                                 </td>
                             </tr>
                         {% endfor %}
